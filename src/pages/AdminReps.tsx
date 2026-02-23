@@ -82,9 +82,10 @@ const AdminReps = () => {
 
   const filtered = reps.filter(
     (r) =>
-      !search ||
-      r.full_name.toLowerCase().includes(search.toLowerCase()) ||
-      r.email.toLowerCase().includes(search.toLowerCase())
+      r.role !== "admin" &&
+      (!search ||
+        r.full_name.toLowerCase().includes(search.toLowerCase()) ||
+        r.email.toLowerCase().includes(search.toLowerCase()))
   );
 
   const getRepStats = (rep: RepRow) => {
