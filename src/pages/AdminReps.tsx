@@ -11,17 +11,22 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, Search, Edit2, Trash2 } from "lucide-react";
+import { Users, Search, Edit2, Trash2, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import LeadForm from "@/components/LeadForm";
 import type { Database } from "@/integrations/supabase/types";
 
 type RepRow = Database["public"]["Tables"]["sales_executives"]["Row"];
+type LeadRow = Database["public"]["Tables"]["leads"]["Row"];
+
 
 const AdminReps = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [editRep, setEditRep] = useState<RepRow | null>(null);
+  const [viewLeadsRep, setViewLeadsRep] = useState<RepRow | null>(null);
+  const [editLead, setEditLead] = useState<LeadRow | null>(null);
 
   const { data: reps = [] } = useQuery({
     queryKey: ["admin-reps"],
@@ -210,6 +215,14 @@ const AdminReps = () => {
                       <p className="text-xs text-muted-foreground">Revenue (KD)</p>
                     </div>
                   </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full mt-3 gap-2"
+                    onClick={() => setViewLeadsRep(rep)}
+                  >
+                    <Eye className="h-3.5 w-3.5" /> View Leads
+                  </Button>
                 </CardContent>
               </Card>
             );
@@ -231,6 +244,71 @@ const AdminReps = () => {
               }
               saving={updateRep.isPending}
             />
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* View Rep Leads Dialog */}
+      {viewLeadsRep && (
+        <Dialog open={!!viewLeadsRep} onOpenChange={() => setViewLeadsRep(null)}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{viewLeadsRep.full_name}'s Leads</DialogTitle>
+            </DialogHeader>
+            {(() => {
+              const repLeads = leads.filter((l) => l.sales_exec_id === viewLeadsRep.user_id);
+              if (repLeads.length === 0) {
+                return <p className="text-sm text-muted-foreground py-6 text-center">No leads assigned.</p>;
+              }
+              return (
+                <div className="overflow-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b text-left">
+                        <th className="pb-2 pr-4 font-medium text-muted-foreground">ID</th>
+                        <th className="pb-2 pr-4 font-medium text-muted-foreground">Date</th>
+                        <th className="pb-2 pr-4 font-medium text-muted-foreground">Client</th>
+                        <th className="pb-2 pr-4 font-medium text-muted-foreground">Solution</th>
+                        <th className="pb-2 pr-4 font-medium text-muted-foreground">Amount (KD)</th>
+                        <th className="pb-2 pr-4 font-medium text-muted-foreground">Status</th>
+                        <th className="pb-2 font-medium text-muted-foreground">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {repLeads.map((lead) => (
+                        <tr key={lead.lead_id} className="border-b last:border-0 hover:bg-muted/50">
+                          <td className="py-2.5 pr-4">{lead.lead_id}</td>
+                          <td className="py-2.5 pr-4">{lead.date_added}</td>
+                          <td className="py-2.5 pr-4 font-medium">{lead.client_business_name}</td>
+                          <td className="py-2.5 pr-4">{lead.solution_selected || "—"}</td>
+                          <td className="py-2.5 pr-4">{Number(lead.final_agreed_amount_kd).toFixed(3)}</td>
+                          <td className="py-2.5 pr-4">
+                            <Badge variant="secondary" className="text-xs font-normal">{lead.status}</Badge>
+                          </td>
+                          <td className="py-2.5">
+                            <Button variant="ghost" size="sm" className="gap-1.5 h-7" onClick={() => setEditLead(lead)}>
+                              <Eye className="h-3.5 w-3.5" /> View
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })()}
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Lead Form Dialog (admin view/edit) */}
+      {editLead && (
+        <Dialog open={!!editLead} onOpenChange={() => setEditLead(null)}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Lead #{editLead.lead_id} — {editLead.client_business_name}</DialogTitle>
+            </DialogHeader>
+            <LeadForm lead={editLead} onClose={() => { setEditLead(null); queryClient.invalidateQueries({ queryKey: ["admin-leads"] }); }} />
           </DialogContent>
         </Dialog>
       )}
