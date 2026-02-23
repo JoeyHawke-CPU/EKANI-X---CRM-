@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Users, BarChart3 } from "lucide-react";
+import { LogOut, LayoutDashboard, Users, BarChart3, FileText } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import ekaniLogo from "@/assets/ekani-logo.png";
@@ -14,9 +14,11 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         { label: "Dashboard", href: "/", icon: LayoutDashboard },
         { label: "Reps", href: "/reps", icon: Users },
         { label: "Analytics", href: "/analytics", icon: BarChart3 },
+        { label: "Reports", href: "/admin-reports", icon: FileText },
       ]
     : [
         { label: "Dashboard", href: "/", icon: LayoutDashboard },
+        { label: "Reports", href: "/reports", icon: FileText },
       ];
 
   return (
