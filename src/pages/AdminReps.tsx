@@ -11,7 +11,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, Search, Edit2, Trash2, Eye } from "lucide-react";
+import { Users, Search, Edit2, Trash2, Eye, Download, FileText, FileSpreadsheet } from "lucide-react";
+import { downloadCSV, downloadPDF } from "@/lib/exportUtils";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import LeadForm from "@/components/LeadForm";
 import type { Database } from "@/integrations/supabase/types";
@@ -100,6 +102,57 @@ const AdminReps = () => {
       .filter((l) => l.status === "Closed – Delivered")
       .reduce((s, l) => s + Number(l.final_agreed_amount_kd || 0), 0);
     return { total: repLeads.length, closed, revenue };
+  };
+
+  const exportRepPDF = (rep: RepRow) => {
+    const repLeads = leads.filter((l) => l.sales_exec_id === rep.user_id);
+    const closedDelivered = repLeads.filter((l) => l.status === "Closed – Delivered");
+    const totalRevenue = closedDelivered.reduce((s, l) => s + Number(l.final_agreed_amount_kd || 0), 0);
+    const totalCommission = repLeads.reduce((s, l) => s + Number(l.commission_amount_kwd || 0), 0);
+    const conv = repLeads.length > 0 ? ((closedDelivered.length / repLeads.length) * 100).toFixed(1) : "0";
+    const headers = ["Lead ID", "Date", "Client", "Source", "Solution", "Amount (KD)", "Status", "Payment", "Commission (KD)"];
+    const rows = repLeads.map((l) => [
+      String(l.lead_id), l.date_added, l.client_business_name, l.lead_source || "—",
+      l.solution_selected || "—", Number(l.final_agreed_amount_kd).toFixed(3), l.status,
+      l.payment_received ? "Yes" : "No", Number(l.commission_amount_kwd || 0).toFixed(3),
+    ]);
+    downloadPDF({
+      title: `Sales Report — ${rep.full_name}`,
+      subtitle: `Generated ${new Date().toLocaleDateString()}`,
+      summaryRows: [
+        { label: "Total Leads", value: String(repLeads.length) },
+        { label: "Closed Delivered", value: String(closedDelivered.length) },
+        { label: "Conversion Rate", value: `${conv}%` },
+        { label: "Revenue (KD)", value: totalRevenue.toFixed(3) },
+        { label: "Total Commission (KD)", value: totalCommission.toFixed(3) },
+      ],
+      tableHeaders: headers,
+      tableRows: rows,
+      filename: `${rep.full_name.replace(/\s+/g, "_")}_report_${new Date().toISOString().split("T")[0]}.pdf`,
+    });
+  };
+
+  const exportRepCSV = (rep: RepRow) => {
+    const repLeads = leads.filter((l) => l.sales_exec_id === rep.user_id);
+    const headers = [
+      "Lead ID", "Date Added", "Client", "Contact Person", "Phone", "WhatsApp", "Email",
+      "Governorate", "Area", "Address", "Lead Source", "Domain Status", "Solution",
+      "Add-Ons", "Quoted (KD)", "Final (KD)", "Commission %", "Commission (KD)",
+      "Status", "Payment Received", "Invoice Generated", "Intake Form", "Follow-Up Due",
+      "Production Deadline", "Preview Sent", "Go-Live", "Remarks",
+    ];
+    const rows = repLeads.map((l) => [
+      String(l.lead_id), l.date_added, l.client_business_name, l.client_contact_person || "",
+      l.phone_number || "", l.whatsapp_number || "", l.email || "",
+      l.governorate || "", l.area || "", l.business_full_address || "",
+      l.lead_source || "", l.domain_status || "", l.solution_selected || "",
+      l.add_ons || "", Number(l.quoted_amount_kd).toFixed(3), Number(l.final_agreed_amount_kd).toFixed(3),
+      String(l.commission_percentage), Number(l.commission_amount_kwd || 0).toFixed(3),
+      l.status, l.payment_received ? "Yes" : "No", l.invoice_generated ? "Yes" : "No",
+      l.intake_form_completed ? "Yes" : "No", l.followup_due_date || "",
+      l.production_deadline || "", l.preview_sent_date || "", l.go_live_date || "", l.remarks || "",
+    ]);
+    downloadCSV(`${rep.full_name.replace(/\s+/g, "_")}_report_${new Date().toISOString().split("T")[0]}.csv`, headers, rows);
   };
 
   return (
@@ -215,14 +268,31 @@ const AdminReps = () => {
                       <p className="text-xs text-muted-foreground">Revenue (KD)</p>
                     </div>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full mt-3 gap-2"
-                    onClick={() => setViewLeadsRep(rep)}
-                  >
-                    <Eye className="h-3.5 w-3.5" /> View Leads
-                  </Button>
+                  <div className="flex gap-2 mt-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 gap-2"
+                      onClick={() => setViewLeadsRep(rep)}
+                    >
+                      <Eye className="h-3.5 w-3.5" /> View Leads
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="gap-2">
+                          <Download className="h-3.5 w-3.5" /> Report
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => exportRepPDF(rep)}>
+                          <FileText className="h-4 w-4 mr-2" /> Download PDF
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => exportRepCSV(rep)}>
+                          <FileSpreadsheet className="h-4 w-4 mr-2" /> Download CSV
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </CardContent>
               </Card>
             );
