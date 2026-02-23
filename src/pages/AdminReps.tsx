@@ -330,6 +330,7 @@ function EditRepForm({
     contact_number: string;
     civil_id: string;
     commission_default_percentage: number;
+    clients_visited_count: number;
     active_status: boolean;
     role: "sales" | "admin";
   }>({
@@ -337,6 +338,7 @@ function EditRepForm({
     contact_number: rep.contact_number || "",
     civil_id: rep.civil_id || "",
     commission_default_percentage: rep.commission_default_percentage,
+    clients_visited_count: rep.clients_visited_count,
     active_status: rep.active_status,
     role: rep.role,
   });
@@ -357,13 +359,21 @@ function EditRepForm({
           <Input value={form.civil_id} onChange={(e) => setForm({ ...form, civil_id: e.target.value })} />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label>Commission %</Label>
           <Input
             type="number"
             value={form.commission_default_percentage}
             onChange={(e) => setForm({ ...form, commission_default_percentage: Number(e.target.value) })}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Clients Visited</Label>
+          <Input
+            type="number"
+            value={form.clients_visited_count}
+            onChange={(e) => setForm({ ...form, clients_visited_count: Number(e.target.value) })}
           />
         </div>
         <div className="space-y-2">
