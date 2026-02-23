@@ -48,7 +48,7 @@ const Login = () => {
       <div className="w-full max-w-md px-4">
         <div className="mb-8 flex flex-col items-center">
           <img src={ekaniLogo} alt="EKANI AI Consultancy" className="h-20 w-auto mb-4" />
-          <p className="text-muted-foreground text-2xl font-bold font-sans">SALES PIPELINE MANAGEMENT 
+          <p className="text-muted-foreground text-2xl font-bold font-sans">SALES CRM PLATFORM 
 
           </p>
         </div>
