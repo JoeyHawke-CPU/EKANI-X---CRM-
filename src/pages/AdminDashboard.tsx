@@ -70,7 +70,7 @@ const AdminDashboard = () => {
   ];
 
   // Per-rep performance
-  const repPerformance = reps.map((rep) => {
+  const repPerformance = reps.filter((r) => r.role !== "admin").map((rep) => {
     const repLeads = leads.filter((l) => l.sales_exec_id === rep.user_id);
     const repClosed = repLeads.filter((l) => l.status === "Closed – Delivered");
     const repRevenue = repClosed.reduce((s, l) => s + Number(l.final_agreed_amount_kd || 0), 0);

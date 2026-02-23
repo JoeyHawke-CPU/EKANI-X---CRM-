@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { LogOut, LayoutDashboard, Users, BarChart3 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import ekaniLogo from "@/assets/ekani-logo.png";
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { profile, role, signOut } = useAuth();
@@ -20,12 +21,11 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top nav */}
       <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
         <div className="mx-auto flex h-14 max-w-[1440px] items-center justify-between px-4 lg:px-6">
           <div className="flex items-center gap-6">
-            <Link to="/" className="text-lg font-bold tracking-tight">
-              EKANI <span className="text-primary">CRM</span>
+            <Link to="/" className="flex items-center gap-2">
+              <img src={ekaniLogo} alt="EKANI" className="h-8 w-auto" />
             </Link>
             <nav className="hidden md:flex items-center gap-1">
               {navItems.map((item) => (
@@ -58,7 +58,6 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         </div>
       </header>
 
-      {/* Main content */}
       <main className="mx-auto max-w-[1440px] px-4 py-6 lg:px-6">
         {children}
       </main>
