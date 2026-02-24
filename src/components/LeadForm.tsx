@@ -274,10 +274,6 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onClose }) => {
             <Label>Final Agreed Amount (KD)</Label>
             <Input type="number" step="0.001" value={form.final_agreed_amount_kd} onChange={(e) => set("final_agreed_amount_kd", e.target.value)} />
           </div>
-          <div className="space-y-2">
-            <Label>Commission %</Label>
-            <Input type="number" step="0.01" value={form.commission_percentage} onChange={(e) => set("commission_percentage", e.target.value)} />
-          </div>
         </div>
       )}
 
