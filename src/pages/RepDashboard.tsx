@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, TrendingUp, CheckCircle, DollarSign, AlertTriangle, Clock, Briefcase, Plus, Search } from "lucide-react";
+import { Users, TrendingUp, CheckCircle, DollarSign, AlertTriangle, Clock, Briefcase, Plus, Search, Eye, Forward } from "lucide-react";
 import LeadForm from "@/components/LeadForm";
 import { LEAD_STATUSES } from "@/lib/constants";
 import type { Database } from "@/integrations/supabase/types";
@@ -176,12 +176,19 @@ const RepDashboard = () => {
                   {filteredLeads.map((lead) => (
                     <div
                       key={lead.lead_id}
-                      className="rounded-lg border p-3 cursor-pointer active:scale-[0.98] transition-transform hover:bg-muted/50"
-                      onClick={() => { setEditLead(lead); setShowForm(true); }}
+                      className="rounded-lg border p-3 hover:bg-muted/50 transition-colors"
                     >
                       <div className="flex items-start justify-between gap-2 mb-1.5">
                         <p className="text-sm font-medium truncate">{lead.client_business_name}</p>
-                        <Badge variant="secondary" className="text-[10px] font-normal shrink-0">{lead.status}</Badge>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <Badge variant="secondary" className="text-[10px] font-normal">{lead.status}</Badge>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditLead(lead); setShowForm(true); }}>
+                            <Eye className="h-3.5 w-3.5 text-muted-foreground" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { navigator.clipboard.writeText(`Lead #${lead.lead_id} – ${lead.client_business_name}`); }}>
+                            <Forward className="h-3.5 w-3.5 text-muted-foreground" />
+                          </Button>
+                        </div>
                       </div>
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <span>#{lead.lead_id}</span>
@@ -206,11 +213,12 @@ const RepDashboard = () => {
                         <th className="pb-2 pr-4 font-medium text-muted-foreground">Solution</th>
                         <th className="pb-2 pr-4 font-medium text-muted-foreground">Amount (KD)</th>
                         <th className="pb-2 pr-4 font-medium text-muted-foreground">Status</th>
+                        <th className="pb-2 font-medium text-muted-foreground">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredLeads.map((lead) => (
-                        <tr key={lead.lead_id} className="border-b last:border-0 hover:bg-muted/50 cursor-pointer" onClick={() => { setEditLead(lead); setShowForm(true); }}>
+                        <tr key={lead.lead_id} className="border-b last:border-0 hover:bg-muted/50">
                           <td className="py-2.5 pr-4">{lead.lead_id}</td>
                           <td className="py-2.5 pr-4">{lead.date_added}</td>
                           <td className="py-2.5 pr-4 font-medium">{lead.client_business_name}</td>
@@ -218,6 +226,16 @@ const RepDashboard = () => {
                           <td className="py-2.5 pr-4">{Number(lead.final_agreed_amount_kd).toFixed(3)}</td>
                           <td className="py-2.5 pr-4">
                             <Badge variant="secondary" className="text-xs font-normal">{lead.status}</Badge>
+                          </td>
+                          <td className="py-2.5">
+                            <div className="flex items-center gap-1">
+                              <Button variant="ghost" size="icon" className="h-8 w-8" title="View" onClick={() => { setEditLead(lead); setShowForm(true); }}>
+                                <Eye className="h-4 w-4 text-muted-foreground" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-8 w-8" title="Forward" onClick={() => { navigator.clipboard.writeText(`Lead #${lead.lead_id} – ${lead.client_business_name}`); }}>
+                                <Forward className="h-4 w-4 text-muted-foreground" />
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       ))}
