@@ -8,13 +8,67 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, TrendingUp, CheckCircle, DollarSign, AlertTriangle, Clock, Briefcase, Plus, Search, Eye, Forward } from "lucide-react";
+import { Users, TrendingUp, CheckCircle, DollarSign, AlertTriangle, Clock, Briefcase, Plus, Search, Eye, Forward, Download, MessageCircle, Mail } from "lucide-react";
 import LeadForm from "@/components/LeadForm";
 import { LEAD_STATUSES } from "@/lib/constants";
 import type { Database } from "@/integrations/supabase/types";
 
 type LeadRow = Database["public"]["Tables"]["leads"]["Row"];
+
+const formatLeadText = (lead: LeadRow) => {
+  return `Lead #${lead.lead_id}\nClient: ${lead.client_business_name}\nContact: ${lead.client_contact_person || "—"}\nPhone: ${lead.phone_number || "—"}\nEmail: ${lead.email || "—"}\nSolution: ${lead.solution_selected || "—"}\nAmount: ${Number(lead.final_agreed_amount_kd).toFixed(3)} KD\nStatus: ${lead.status}\nDate: ${lead.date_added}`;
+};
+
+const downloadLeadCSV = (lead: LeadRow) => {
+  const headers = ["Lead ID", "Client", "Contact Person", "Phone", "Email", "Solution", "Amount (KD)", "Status", "Date Added"];
+  const values = [lead.lead_id, lead.client_business_name, lead.client_contact_person || "", lead.phone_number || "", lead.email || "", lead.solution_selected || "", Number(lead.final_agreed_amount_kd).toFixed(3), lead.status, lead.date_added];
+  const csv = [headers.join(","), values.map((v) => `"${v}"`).join(",")].join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `lead-${lead.lead_id}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+const shareViaWhatsApp = (lead: LeadRow) => {
+  const text = encodeURIComponent(formatLeadText(lead));
+  window.open(`https://wa.me/?text=${text}`, "_blank");
+};
+
+const shareViaEmail = (lead: LeadRow) => {
+  const subject = encodeURIComponent(`Lead #${lead.lead_id} – ${lead.client_business_name}`);
+  const body = encodeURIComponent(formatLeadText(lead));
+  window.open(`mailto:?subject=${subject}&body=${body}`, "_blank");
+};
+
+const ForwardPopover = ({ lead, size = "sm" }: { lead: LeadRow; size?: "sm" | "md" }) => {
+  const iconSize = size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4";
+  const btnSize = size === "sm" ? "h-7 w-7" : "h-8 w-8";
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size="icon" className={btnSize} title="Forward">
+          <Forward className={`${iconSize} text-muted-foreground`} />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-44 p-1.5" align="end">
+        <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-muted transition-colors" onClick={() => downloadLeadCSV(lead)}>
+          <Download className="h-4 w-4 text-muted-foreground" /> Download
+        </button>
+        <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-muted transition-colors" onClick={() => shareViaWhatsApp(lead)}>
+          <MessageCircle className="h-4 w-4 text-muted-foreground" /> WhatsApp
+        </button>
+        <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-muted transition-colors" onClick={() => shareViaEmail(lead)}>
+          <Mail className="h-4 w-4 text-muted-foreground" /> Email
+        </button>
+      </PopoverContent>
+    </Popover>
+  );
+};
 
 const RepDashboard = () => {
   const { user, profile } = useAuth();
@@ -185,9 +239,7 @@ const RepDashboard = () => {
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditLead(lead); setShowForm(true); }}>
                             <Eye className="h-3.5 w-3.5 text-muted-foreground" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { navigator.clipboard.writeText(`Lead #${lead.lead_id} – ${lead.client_business_name}`); }}>
-                            <Forward className="h-3.5 w-3.5 text-muted-foreground" />
-                          </Button>
+                          <ForwardPopover lead={lead} size="sm" />
                         </div>
                       </div>
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -232,9 +284,7 @@ const RepDashboard = () => {
                               <Button variant="ghost" size="icon" className="h-8 w-8" title="View" onClick={() => { setEditLead(lead); setShowForm(true); }}>
                                 <Eye className="h-4 w-4 text-muted-foreground" />
                               </Button>
-                              <Button variant="ghost" size="icon" className="h-8 w-8" title="Forward" onClick={() => { navigator.clipboard.writeText(`Lead #${lead.lead_id} – ${lead.client_business_name}`); }}>
-                                <Forward className="h-4 w-4 text-muted-foreground" />
-                              </Button>
+                              <ForwardPopover lead={lead} size="md" />
                             </div>
                           </td>
                         </tr>
