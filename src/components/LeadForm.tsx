@@ -69,6 +69,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onClose }) => {
     escalation_required: lead?.escalation_required || false,
     followup_due_date: lead?.followup_due_date || "",
     remarks: lead?.remarks || "",
+    delivery_tracking_status: (lead as any)?.delivery_tracking_status || "Ongoing",
     status: lead?.status || "New Lead",
   });
 
@@ -119,6 +120,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onClose }) => {
       escalation_required: form.escalation_required,
       followup_due_date: form.followup_due_date || null,
       remarks: form.remarks || null,
+      delivery_tracking_status: form.delivery_tracking_status || "Ongoing",
       status: form.status as any,
     };
 
@@ -326,6 +328,27 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onClose }) => {
           <div className="space-y-2 sm:col-span-2">
             <Label>Remarks</Label>
             <Textarea value={form.remarks} onChange={(e) => set("remarks", e.target.value)} rows={3} />
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Delivery Tracking Status</Label>
+            <div className="flex gap-3 pt-1">
+              {([
+                { value: "Ongoing", color: "bg-orange-500 hover:bg-orange-600" },
+                { value: "Closed", color: "bg-green-600 hover:bg-green-700" },
+                { value: "Escalated", color: "bg-red-600 hover:bg-red-700" },
+              ] as const).map(({ value, color }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => set("delivery_tracking_status", value)}
+                  className={`px-4 py-2 rounded-md text-sm font-medium text-white transition-colors ${color} ${
+                    form.delivery_tracking_status === value ? "ring-2 ring-offset-2 ring-ring" : "opacity-60"
+                  }`}
+                >
+                  {value}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}

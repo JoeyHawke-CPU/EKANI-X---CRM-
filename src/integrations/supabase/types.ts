@@ -29,6 +29,7 @@ export type Database = {
           date_added: string
           days_to_close: number | null
           decision_maker_confirmed: boolean
+          delivery_tracking_status: string | null
           domain_status: string | null
           email: string | null
           escalation_required: boolean
@@ -70,6 +71,7 @@ export type Database = {
           date_added?: string
           days_to_close?: number | null
           decision_maker_confirmed?: boolean
+          delivery_tracking_status?: string | null
           domain_status?: string | null
           email?: string | null
           escalation_required?: boolean
@@ -111,6 +113,7 @@ export type Database = {
           date_added?: string
           days_to_close?: number | null
           decision_maker_confirmed?: boolean
+          delivery_tracking_status?: string | null
           domain_status?: string | null
           email?: string | null
           escalation_required?: boolean

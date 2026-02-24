@@ -1,0 +1,1 @@
+ALTER TABLE public.leads ADD COLUMN delivery_tracking_status text DEFAULT 'Ongoing' CHECK (delivery_tracking_status IN ('Ongoing', 'Closed', 'Escalated'));
