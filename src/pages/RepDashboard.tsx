@@ -17,6 +17,15 @@ import type { Database } from "@/integrations/supabase/types";
 
 type LeadRow = Database["public"]["Tables"]["leads"]["Row"];
 
+const getDeliveryStatusColor = (status: string | null) => {
+  switch (status) {
+    case "Closed": return "bg-green-600 text-white";
+    case "Escalated": return "bg-red-600 text-white";
+    case "Ongoing":
+    default: return "bg-orange-500 text-white";
+  }
+};
+
 const formatLeadText = (lead: LeadRow) => {
   return `Lead #${lead.lead_id}\nClient: ${lead.client_business_name}\nContact: ${lead.client_contact_person || "—"}\nPhone: ${lead.phone_number || "—"}\nEmail: ${lead.email || "—"}\nSolution: ${lead.solution_selected || "—"}\nAmount: ${Number(lead.final_agreed_amount_kd).toFixed(3)} KD\nStatus: ${lead.status}\nDate: ${lead.date_added}`;
 };
@@ -236,6 +245,9 @@ const RepDashboard = () => {
                         <p className="text-sm font-medium truncate">{lead.client_business_name}</p>
                         <div className="flex items-center gap-1 shrink-0">
                           <Badge variant="secondary" className="text-[10px] font-normal">{lead.status}</Badge>
+                          <Badge className={`text-[10px] font-normal border-0 ${getDeliveryStatusColor((lead as any).delivery_tracking_status)}`}>
+                            {(lead as any).delivery_tracking_status || "Ongoing"}
+                          </Badge>
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditLead(lead); setShowForm(true); }}>
                             <Eye className="h-3.5 w-3.5 text-muted-foreground" />
                           </Button>
@@ -278,6 +290,9 @@ const RepDashboard = () => {
                           <td className="py-2.5 pr-4">{Number(lead.final_agreed_amount_kd).toFixed(3)}</td>
                           <td className="py-2.5 pr-4">
                             <Badge variant="secondary" className="text-xs font-normal">{lead.status}</Badge>
+                            <Badge className={`text-xs font-normal border-0 ml-1 ${getDeliveryStatusColor((lead as any).delivery_tracking_status)}`}>
+                              {(lead as any).delivery_tracking_status || "Ongoing"}
+                            </Badge>
                           </td>
                           <td className="py-2.5">
                             <div className="flex items-center gap-1">
