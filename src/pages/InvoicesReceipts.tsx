@@ -17,7 +17,7 @@ import { FileText, Receipt, Plus, Download, MessageCircle, Mail, Search } from "
 import { generateInvoicePDF, generateReceiptPDF } from "@/lib/invoicePdfGenerator";
 
 const InvoicesReceipts = () => {
-  const { user, role } = useAuth();
+  const { user, role, profile } = useAuth();
   const queryClient = useQueryClient();
   const [showInvoiceForm, setShowInvoiceForm] = useState(false);
   const [showReceiptForm, setShowReceiptForm] = useState(false);
@@ -112,6 +112,7 @@ const InvoicesReceipts = () => {
               items={filteredInvoices}
               type="invoice"
               leads={leads}
+              salesRepName={profile?.full_name}
             />
           </TabsContent>
 
@@ -139,6 +140,7 @@ const InvoicesReceipts = () => {
           <InvoiceForm
             leads={leads}
             userId={user?.id || ""}
+            salesRepName={profile?.full_name}
             onSuccess={() => {
               setShowInvoiceForm(false);
               queryClient.invalidateQueries({ queryKey: ["invoices"] });
@@ -168,7 +170,7 @@ const InvoicesReceipts = () => {
 };
 
 // ---------- Document List ----------
-function DocumentList({ items, type, leads }: { items: any[]; type: "invoice" | "receipt"; leads: any[] }) {
+function DocumentList({ items, type, leads, salesRepName }: { items: any[]; type: "invoice" | "receipt"; leads: any[]; salesRepName?: string }) {
   if (items.length === 0) {
     return (
       <Card>
@@ -190,6 +192,7 @@ function DocumentList({ items, type, leads }: { items: any[]; type: "invoice" | 
         amountKd: Number(item.amount_kd),
         paymentTerms: item.payment_terms,
         notes: item.notes,
+        salesRepName,
       });
       doc.save(`${item.invoice_number}.pdf`);
     } else {
@@ -274,7 +277,7 @@ function DocumentList({ items, type, leads }: { items: any[]; type: "invoice" | 
 }
 
 // ---------- Invoice Form ----------
-function InvoiceForm({ leads, userId, onSuccess }: { leads: any[]; userId: string; onSuccess: () => void }) {
+function InvoiceForm({ leads, userId, salesRepName, onSuccess }: { leads: any[]; userId: string; salesRepName?: string; onSuccess: () => void }) {
   const [saving, setSaving] = useState(false);
   const [selectedLeadId, setSelectedLeadId] = useState<string>("");
   const [form, setForm] = useState({
@@ -335,6 +338,7 @@ function InvoiceForm({ leads, userId, onSuccess }: { leads: any[]; userId: strin
         amountKd: parseFloat(form.amount_kd),
         paymentTerms: form.payment_terms,
         notes: form.notes,
+        salesRepName,
       });
       doc.save(`${(data as any).invoice_number}.pdf`);
       toast.success(`Invoice ${(data as any).invoice_number} created and downloaded`);

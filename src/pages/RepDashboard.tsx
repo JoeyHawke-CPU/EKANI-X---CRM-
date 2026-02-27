@@ -56,7 +56,7 @@ const shareViaEmail = (lead: LeadRow) => {
   window.open(`mailto:?subject=${subject}&body=${body}`, "_blank");
 };
 
-const quickInvoice = async (lead: LeadRow, userId: string) => {
+const quickInvoice = async (lead: LeadRow, userId: string, salesRepName?: string) => {
   const { data, error } = await supabase.from("invoices").insert({
     invoice_number: "",
     date: new Date().toISOString().split("T")[0],
@@ -75,6 +75,7 @@ const quickInvoice = async (lead: LeadRow, userId: string) => {
     clientAddress: lead.business_full_address || undefined,
     description: lead.solution_selected || "Professional services",
     amountKd: Number(lead.final_agreed_amount_kd),
+    salesRepName,
   });
   doc.save(`${(data as any).invoice_number}.pdf`);
   toast.success(`Invoice ${(data as any).invoice_number} generated`);
@@ -104,7 +105,7 @@ const quickReceipt = async (lead: LeadRow, userId: string) => {
   toast.success(`Receipt ${(data as any).receipt_number} generated`);
 };
 
-const ForwardPopover = ({ lead, size = "sm", userId }: { lead: LeadRow; size?: "sm" | "md"; userId: string }) => {
+const ForwardPopover = ({ lead, size = "sm", userId, profileName }: { lead: LeadRow; size?: "sm" | "md"; userId: string; profileName?: string }) => {
   const iconSize = size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4";
   const btnSize = size === "sm" ? "h-7 w-7" : "h-8 w-8";
   return (
@@ -118,7 +119,7 @@ const ForwardPopover = ({ lead, size = "sm", userId }: { lead: LeadRow; size?: "
         <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-muted transition-colors" onClick={() => downloadLeadCSV(lead)}>
           <Download className="h-4 w-4 text-muted-foreground" /> Download CSV
         </button>
-        <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-muted transition-colors" onClick={() => quickInvoice(lead, userId)}>
+        <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-muted transition-colors" onClick={() => quickInvoice(lead, userId, profileName)}>
           <FileText className="h-4 w-4 text-muted-foreground" /> Generate Invoice
         </button>
         <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-muted transition-colors" onClick={() => quickReceipt(lead, userId)}>
@@ -308,7 +309,7 @@ const RepDashboard = () => {
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditLead(lead); setShowForm(true); }}>
                             <Eye className="h-3.5 w-3.5 text-muted-foreground" />
                           </Button>
-                          <ForwardPopover lead={lead} size="sm" userId={user?.id || ""} />
+                          <ForwardPopover lead={lead} size="sm" userId={user?.id || ""} profileName={profile?.full_name} />
                         </div>
                       </div>
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -356,7 +357,7 @@ const RepDashboard = () => {
                               <Button variant="ghost" size="icon" className="h-8 w-8" title="View" onClick={() => { setEditLead(lead); setShowForm(true); }}>
                                 <Eye className="h-4 w-4 text-muted-foreground" />
                               </Button>
-                              <ForwardPopover lead={lead} size="md" userId={user?.id || ""} />
+                              <ForwardPopover lead={lead} size="md" userId={user?.id || ""} profileName={profile?.full_name} />
                             </div>
                           </td>
                         </tr>
