@@ -179,9 +179,9 @@ function DocumentList({ items, type, leads }: { items: any[]; type: "invoice" | 
     );
   }
 
-  const handleDownload = (item: any) => {
+  const handleDownload = async (item: any) => {
     if (type === "invoice") {
-      const doc = generateInvoicePDF({
+      const doc = await generateInvoicePDF({
         invoiceNumber: item.invoice_number,
         date: item.date,
         clientName: item.client_name,
@@ -193,7 +193,7 @@ function DocumentList({ items, type, leads }: { items: any[]; type: "invoice" | 
       });
       doc.save(`${item.invoice_number}.pdf`);
     } else {
-      const doc = generateReceiptPDF({
+      const doc = await generateReceiptPDF({
         receiptNumber: item.receipt_number,
         date: item.date,
         clientName: item.client_name,
@@ -326,7 +326,7 @@ function InvoiceForm({ leads, userId, onSuccess }: { leads: any[]; userId: strin
       toast.error(error.message);
     } else {
       // Generate and download PDF
-      const doc = generateInvoicePDF({
+      const doc = await generateInvoicePDF({
         invoiceNumber: (data as any).invoice_number,
         date: form.date,
         clientName: form.client_name,
@@ -450,7 +450,7 @@ function ReceiptForm({ leads, userId, onSuccess }: { leads: any[]; userId: strin
     if (error) {
       toast.error(error.message);
     } else {
-      const doc = generateReceiptPDF({
+      const doc = await generateReceiptPDF({
         receiptNumber: (data as any).receipt_number,
         date: form.date,
         clientName: form.client_name,

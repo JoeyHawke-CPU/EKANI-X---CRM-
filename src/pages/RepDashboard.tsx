@@ -68,7 +68,7 @@ const quickInvoice = async (lead: LeadRow, userId: string) => {
     created_by: userId,
   } as any).select().single();
   if (error) { toast.error(error.message); return; }
-  const doc = generateInvoicePDF({
+  const doc = await generateInvoicePDF({
     invoiceNumber: (data as any).invoice_number,
     date: new Date().toISOString().split("T")[0],
     clientName: lead.client_business_name,
@@ -92,7 +92,7 @@ const quickReceipt = async (lead: LeadRow, userId: string) => {
     created_by: userId,
   } as any).select().single();
   if (error) { toast.error(error.message); return; }
-  const doc = generateReceiptPDF({
+  const doc = await generateReceiptPDF({
     receiptNumber: (data as any).receipt_number,
     date: new Date().toISOString().split("T")[0],
     clientName: lead.client_business_name,
