@@ -14,6 +14,7 @@ import AdminReps from "./pages/AdminReps";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminReports from "./pages/AdminReports";
 import RepReports from "./pages/RepReports";
+import InvoicesReceipts from "./pages/InvoicesReceipts";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -67,6 +68,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <AdminReports />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/invoices"
+              element={
+                <ProtectedRoute>
+                  <InvoicesReceipts />
                 </ProtectedRoute>
               }
             />
