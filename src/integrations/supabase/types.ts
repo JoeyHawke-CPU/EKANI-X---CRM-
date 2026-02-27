@@ -14,6 +14,80 @@ export type Database = {
   }
   public: {
     Tables: {
+      invoices: {
+        Row: {
+          amount_kd: number
+          client_address: string | null
+          client_name: string
+          created_at: string
+          created_by: string
+          date: string
+          description: string
+          id: string
+          invoice_number: string
+          lead_id: number | null
+          notes: string | null
+          payment_terms: string | null
+        }
+        Insert: {
+          amount_kd?: number
+          client_address?: string | null
+          client_name: string
+          created_at?: string
+          created_by: string
+          date?: string
+          description?: string
+          id?: string
+          invoice_number: string
+          lead_id?: number | null
+          notes?: string | null
+          payment_terms?: string | null
+        }
+        Update: {
+          amount_kd?: number
+          client_address?: string | null
+          client_name?: string
+          created_at?: string
+          created_by?: string
+          date?: string
+          description?: string
+          id?: string
+          invoice_number?: string
+          lead_id?: number | null
+          notes?: string | null
+          payment_terms?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["lead_id"]
+          },
+          {
+            foreignKeyName: "invoices_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "v_admin_leads_export"
+            referencedColumns: ["lead_id"]
+          },
+          {
+            foreignKeyName: "invoices_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "v_commission_payout_report"
+            referencedColumns: ["lead_id"]
+          },
+          {
+            foreignKeyName: "invoices_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "v_my_leads_export"
+            referencedColumns: ["lead_id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           add_ons: string | null
@@ -148,6 +222,80 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "sales_executives"
             referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      receipts: {
+        Row: {
+          amount_kd: number
+          bank_name: string | null
+          cheque_reference: string | null
+          client_name: string
+          created_at: string
+          created_by: string
+          date: string
+          description: string
+          id: string
+          lead_id: number | null
+          payment_method: string
+          receipt_number: string
+        }
+        Insert: {
+          amount_kd?: number
+          bank_name?: string | null
+          cheque_reference?: string | null
+          client_name: string
+          created_at?: string
+          created_by: string
+          date?: string
+          description?: string
+          id?: string
+          lead_id?: number | null
+          payment_method?: string
+          receipt_number: string
+        }
+        Update: {
+          amount_kd?: number
+          bank_name?: string | null
+          cheque_reference?: string | null
+          client_name?: string
+          created_at?: string
+          created_by?: string
+          date?: string
+          description?: string
+          id?: string
+          lead_id?: number | null
+          payment_method?: string
+          receipt_number?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receipts_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["lead_id"]
+          },
+          {
+            foreignKeyName: "receipts_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "v_admin_leads_export"
+            referencedColumns: ["lead_id"]
+          },
+          {
+            foreignKeyName: "receipts_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "v_commission_payout_report"
+            referencedColumns: ["lead_id"]
+          },
+          {
+            foreignKeyName: "receipts_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "v_my_leads_export"
+            referencedColumns: ["lead_id"]
           },
         ]
       }

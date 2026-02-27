@@ -10,9 +10,11 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, TrendingUp, CheckCircle, DollarSign, AlertTriangle, Clock, Briefcase, Plus, Search, Eye, Forward, Download, MessageCircle, Mail } from "lucide-react";
+import { Users, TrendingUp, CheckCircle, DollarSign, AlertTriangle, Clock, Briefcase, Plus, Search, Eye, Forward, Download, MessageCircle, Mail, FileText, Receipt } from "lucide-react";
 import LeadForm from "@/components/LeadForm";
 import { LEAD_STATUSES } from "@/lib/constants";
+import { generateInvoicePDF, generateReceiptPDF } from "@/lib/invoicePdfGenerator";
+import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
 
 type LeadRow = Database["public"]["Tables"]["leads"]["Row"];
@@ -54,7 +56,55 @@ const shareViaEmail = (lead: LeadRow) => {
   window.open(`mailto:?subject=${subject}&body=${body}`, "_blank");
 };
 
-const ForwardPopover = ({ lead, size = "sm" }: { lead: LeadRow; size?: "sm" | "md" }) => {
+const quickInvoice = async (lead: LeadRow, userId: string) => {
+  const { data, error } = await supabase.from("invoices").insert({
+    invoice_number: "",
+    date: new Date().toISOString().split("T")[0],
+    lead_id: lead.lead_id,
+    client_name: lead.client_business_name,
+    client_address: lead.business_full_address || null,
+    description: lead.solution_selected || "Professional services",
+    amount_kd: Number(lead.final_agreed_amount_kd),
+    created_by: userId,
+  } as any).select().single();
+  if (error) { toast.error(error.message); return; }
+  const doc = generateInvoicePDF({
+    invoiceNumber: (data as any).invoice_number,
+    date: new Date().toISOString().split("T")[0],
+    clientName: lead.client_business_name,
+    clientAddress: lead.business_full_address || undefined,
+    description: lead.solution_selected || "Professional services",
+    amountKd: Number(lead.final_agreed_amount_kd),
+  });
+  doc.save(`${(data as any).invoice_number}.pdf`);
+  toast.success(`Invoice ${(data as any).invoice_number} generated`);
+};
+
+const quickReceipt = async (lead: LeadRow, userId: string) => {
+  const { data, error } = await supabase.from("receipts").insert({
+    receipt_number: "",
+    date: new Date().toISOString().split("T")[0],
+    lead_id: lead.lead_id,
+    client_name: lead.client_business_name,
+    amount_kd: Number(lead.final_agreed_amount_kd),
+    payment_method: "Cash",
+    description: `Payment for ${lead.solution_selected || "services"}`,
+    created_by: userId,
+  } as any).select().single();
+  if (error) { toast.error(error.message); return; }
+  const doc = generateReceiptPDF({
+    receiptNumber: (data as any).receipt_number,
+    date: new Date().toISOString().split("T")[0],
+    clientName: lead.client_business_name,
+    amountKd: Number(lead.final_agreed_amount_kd),
+    paymentMethod: "Cash",
+    description: `Payment for ${lead.solution_selected || "services"}`,
+  });
+  doc.save(`${(data as any).receipt_number}.pdf`);
+  toast.success(`Receipt ${(data as any).receipt_number} generated`);
+};
+
+const ForwardPopover = ({ lead, size = "sm", userId }: { lead: LeadRow; size?: "sm" | "md"; userId: string }) => {
   const iconSize = size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4";
   const btnSize = size === "sm" ? "h-7 w-7" : "h-8 w-8";
   return (
@@ -64,10 +114,17 @@ const ForwardPopover = ({ lead, size = "sm" }: { lead: LeadRow; size?: "sm" | "m
           <Forward className={`${iconSize} text-muted-foreground`} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-44 p-1.5" align="end">
+      <PopoverContent className="w-48 p-1.5" align="end">
         <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-muted transition-colors" onClick={() => downloadLeadCSV(lead)}>
-          <Download className="h-4 w-4 text-muted-foreground" /> Download
+          <Download className="h-4 w-4 text-muted-foreground" /> Download CSV
         </button>
+        <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-muted transition-colors" onClick={() => quickInvoice(lead, userId)}>
+          <FileText className="h-4 w-4 text-muted-foreground" /> Generate Invoice
+        </button>
+        <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-muted transition-colors" onClick={() => quickReceipt(lead, userId)}>
+          <Receipt className="h-4 w-4 text-muted-foreground" /> Generate Receipt
+        </button>
+        <hr className="my-1 border-border" />
         <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-muted transition-colors" onClick={() => shareViaWhatsApp(lead)}>
           <MessageCircle className="h-4 w-4 text-muted-foreground" /> WhatsApp
         </button>
@@ -251,7 +308,7 @@ const RepDashboard = () => {
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditLead(lead); setShowForm(true); }}>
                             <Eye className="h-3.5 w-3.5 text-muted-foreground" />
                           </Button>
-                          <ForwardPopover lead={lead} size="sm" />
+                          <ForwardPopover lead={lead} size="sm" userId={user?.id || ""} />
                         </div>
                       </div>
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -299,7 +356,7 @@ const RepDashboard = () => {
                               <Button variant="ghost" size="icon" className="h-8 w-8" title="View" onClick={() => { setEditLead(lead); setShowForm(true); }}>
                                 <Eye className="h-4 w-4 text-muted-foreground" />
                               </Button>
-                              <ForwardPopover lead={lead} size="md" />
+                              <ForwardPopover lead={lead} size="md" userId={user?.id || ""} />
                             </div>
                           </td>
                         </tr>
