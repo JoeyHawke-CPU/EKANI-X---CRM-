@@ -209,15 +209,22 @@ function DocumentList({ items, type, leads }: { items: any[]; type: "invoice" | 
   };
 
   const handleWhatsApp = (item: any) => {
-    // Find lead to get whatsapp number
+    // Auto-download the PDF first so the user can attach it
+    handleDownload(item);
+
     const lead = leads.find((l: any) => l.lead_id === item.lead_id);
     const number = lead?.whatsapp_number?.replace(/[^0-9]/g, "") || "";
     const docNum = type === "invoice" ? item.invoice_number : item.receipt_number;
     const text = encodeURIComponent(
-      `Dear ${item.client_name},\n\nPlease find your ${type} ${docNum} for KD ${Number(item.amount_kd).toFixed(3)}.\n\nThank you,\nEKANI AI Consultancy`
+      `Dear ${item.client_name},\n\nPlease find attached your ${type} ${docNum} for KD ${Number(item.amount_kd).toFixed(3)}.\n\nThank you,\nEKANI AI Consultancy`
     );
     const url = number ? `https://wa.me/${number}?text=${text}` : `https://wa.me/?text=${text}`;
-    window.open(url, "_blank");
+
+    // Small delay so the PDF download starts before opening WhatsApp
+    setTimeout(() => {
+      window.open(url, "_blank");
+      toast.info("PDF downloaded — please attach it to your WhatsApp message");
+    }, 500);
   };
 
   const handleEmail = (item: any) => {
