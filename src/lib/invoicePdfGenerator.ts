@@ -179,148 +179,164 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<jsPDF> {
   const logoData = await loadLogoBase64();
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
-  const margin = 14;
+  const margin = 12;
+  const contentW = pageW - margin * 2;
 
   let y = drawCompactHeader(doc, pageW, logoData);
 
-  // Title row: "INVOICE" left, meta right
-  doc.setFontSize(18);
+  // ── Title row: "INVOICE" left, meta right ──
+  doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...BRAND_RED);
-  doc.text("INVOICE", margin, y + 6);
+  doc.text("INVOICE", margin, y + 5);
 
-  // Meta block — right side
-  doc.setFontSize(8.5);
-  doc.setTextColor(...DARK);
+  // Meta block — right-aligned, tighter
   const metaX = pageW - margin;
+  doc.setFontSize(8);
+  doc.setTextColor(...DARK);
   doc.setFont("helvetica", "bold");
-  doc.text(`Invoice No:`, metaX - 45, y + 1);
+  doc.text("Invoice No:", metaX - 40, y + 1);
   doc.setFont("helvetica", "normal");
   doc.text(data.invoiceNumber, metaX, y + 1, { align: "right" });
-
   doc.setFont("helvetica", "bold");
-  doc.text(`Date:`, metaX - 45, y + 6);
+  doc.text("Date:", metaX - 40, y + 5);
   doc.setFont("helvetica", "normal");
-  doc.text(data.date, metaX, y + 6, { align: "right" });
+  doc.text(data.date, metaX, y + 5, { align: "right" });
 
-  y += 14;
+  y += 11;
 
-  // Bill To section — compact box
+  // ── Bill To + Sales Rep — side by side ──
+  const halfW = (contentW - 4) / 2;
+  const billBoxH = data.clientAddress ? 16 : 12;
+
+  // Bill To box
   doc.setFillColor(248, 248, 248);
-  const billBoxH = data.clientAddress ? 18 : 13;
-  doc.roundedRect(margin, y, pageW - margin * 2, billBoxH, 1.5, 1.5, "F");
-
-  doc.setFontSize(7);
+  doc.roundedRect(margin, y, halfW, billBoxH, 1, 1, "F");
+  doc.setFontSize(6.5);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...BRAND_TEAL);
-  doc.text("BILL TO", margin + 4, y + 4.5);
-
-  doc.setFontSize(9);
+  doc.text("BILL TO", margin + 3, y + 4);
+  doc.setFontSize(8.5);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...DARK);
-  doc.text(data.clientName, margin + 4, y + 9.5);
-
+  doc.text(data.clientName, margin + 3, y + 8.5);
   if (data.clientAddress) {
-    doc.setFontSize(7.5);
+    doc.setFontSize(7);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...GRAY);
-    doc.text(data.clientAddress, margin + 4, y + 14);
+    const addrLines = doc.splitTextToSize(data.clientAddress, halfW - 6);
+    doc.text(addrLines, margin + 3, y + 12.5);
   }
 
-  y += billBoxH + 5;
+  // Sales Rep box (right side)
+  if (data.salesRepName) {
+    const repX = margin + halfW + 4;
+    doc.setFillColor(248, 248, 248);
+    doc.roundedRect(repX, y, halfW, billBoxH, 1, 1, "F");
+    doc.setFontSize(6.5);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...BRAND_TEAL);
+    doc.text("SALES REPRESENTATIVE", repX + 3, y + 4);
+    doc.setFontSize(8.5);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...DARK);
+    doc.text(data.salesRepName, repX + 3, y + 8.5);
+  }
 
-  // Items table
+  y += billBoxH + 4;
+
+  // ── Items table ──
   autoTable(doc, {
     startY: y,
     head: [["#", "Description", "Amount (KD)"]],
     body: [["1", data.description, formatKD(data.amountKd)]],
-    styles: { fontSize: 8.5, cellPadding: 2.5, textColor: DARK },
+    styles: { fontSize: 8, cellPadding: 2, textColor: DARK },
     headStyles: {
       fillColor: BRAND_TEAL,
       textColor: [255, 255, 255] as [number, number, number],
       fontStyle: "bold",
-      fontSize: 8,
+      fontSize: 7.5,
     },
-    alternateRowStyles: { fillColor: [250, 250, 250] as [number, number, number] },
     columnStyles: {
-      0: { cellWidth: 10, halign: "center" },
-      2: { cellWidth: 32, halign: "right" },
+      0: { cellWidth: 8, halign: "center" },
+      2: { cellWidth: 28, halign: "right" },
     },
     margin: { left: margin, right: margin },
   });
 
   y = (doc as any).lastAutoTable.finalY + 2;
 
-  // Total row
-  const totalBoxW = 70;
+  // ── Total row ──
+  const totalBoxW = 65;
   const totalBoxX = pageW - margin - totalBoxW;
   doc.setFillColor(...BRAND_RED);
-  doc.roundedRect(totalBoxX, y, totalBoxW, 9, 1.5, 1.5, "F");
+  doc.roundedRect(totalBoxX, y, totalBoxW, 8, 1, 1, "F");
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
+  doc.setFontSize(8.5);
   doc.setTextColor(255, 255, 255);
-  doc.text("TOTAL:", totalBoxX + 5, y + 6.2);
-  doc.text(formatKD(data.amountKd), totalBoxX + totalBoxW - 5, y + 6.2, { align: "right" });
-  y += 14;
+  doc.text("TOTAL:", totalBoxX + 4, y + 5.5);
+  doc.text(formatKD(data.amountKd), totalBoxX + totalBoxW - 4, y + 5.5, { align: "right" });
 
-  // Amount in words
-  doc.setFontSize(7.5);
+  // Amount in words — right-aligned under total
+  y += 11;
+  doc.setFontSize(7);
   doc.setFont("helvetica", "italic");
   doc.setTextColor(...GRAY);
   doc.text(`Amount in words: ${amountToWords(data.amountKd)}`, margin, y);
-  y += 7;
 
-  // Payment terms
-  if (data.paymentTerms) {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
-    doc.setTextColor(...BRAND_TEAL);
-    doc.text("Payment Terms", margin, y);
-    y += 4;
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...DARK);
-    doc.setFontSize(8);
-    const termLines = doc.splitTextToSize(data.paymentTerms, pageW - margin * 2);
-    doc.text(termLines, margin, y);
-    y += termLines.length * 3.5 + 3;
-  }
+  y += 5;
 
-  // Notes
-  if (data.notes) {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
-    doc.setTextColor(...BRAND_TEAL);
-    doc.text("Notes", margin, y);
-    y += 4;
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...DARK);
-    const noteLines = doc.splitTextToSize(data.notes, pageW - margin * 2);
-    doc.text(noteLines, margin, y);
-  }
+  // ── Condensed Terms & Conditions ──
+  doc.setDrawColor(...BRAND_RED);
+  doc.setLineWidth(0.3);
+  doc.line(margin, y, pageW - margin, y);
+  y += 3;
 
-  // Sales Representative
-  if (data.salesRepName) {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
-    doc.setTextColor(...BRAND_TEAL);
-    doc.text("Sales Representative", margin, y);
-    y += 4;
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...DARK);
-    doc.text(data.salesRepName, margin, y);
-    y += 8;
-  }
-
-  // Thank you
   doc.setFontSize(8);
   doc.setFont("helvetica", "bold");
+  doc.setTextColor(...BRAND_RED);
+  doc.text("Terms & Conditions", margin, y);
+  y += 3.5;
+
+  const tcFontSize = 5.5;
+  const lineH = 2.6;
+  doc.setFontSize(tcFontSize);
+
+  TERMS_AND_CONDITIONS.forEach((term, idx) => {
+    // Title inline with body for compactness
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...BRAND_TEAL);
+    const titleText = `${idx + 1}. ${term.title}: `;
+    const titleW = doc.getTextWidth(titleText);
+
+    doc.text(titleText, margin, y);
+
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...DARK);
+    // Wrap body text starting after the title on line 1
+    const bodyLines = doc.splitTextToSize(term.body, contentW - titleW);
+    if (bodyLines.length > 0) {
+      doc.text(bodyLines[0], margin + titleW, y);
+    }
+    // Remaining lines at full width
+    if (bodyLines.length > 1) {
+      const remaining = bodyLines.slice(1);
+      const remainingWrapped = doc.splitTextToSize(remaining.join(" "), contentW);
+      y += lineH;
+      doc.text(remainingWrapped, margin, y);
+      y += (remainingWrapped.length - 1) * lineH;
+    }
+    y += lineH + 0.5;
+  });
+
+  // ── Thank you ──
+  y += 1;
+  doc.setFontSize(7.5);
+  doc.setFont("helvetica", "bold");
   doc.setTextColor(...BRAND_TEAL);
-  doc.text("Thank you for your business.", pageW / 2, y + 4, { align: "center" });
+  doc.text("Thank you for your business.", pageW / 2, y, { align: "center" });
 
   drawSingleLineFooter(doc, pageW);
-
-  // Terms & Conditions on page 2
-  drawTermsAndConditions(doc, pageW, margin);
 
   return doc;
 }
