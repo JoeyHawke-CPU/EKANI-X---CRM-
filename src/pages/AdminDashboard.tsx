@@ -39,7 +39,7 @@ const AdminDashboard = () => {
     .filter((l) => l.status !== "Closed – Delivered" && l.status !== "Closed Lost")
     .reduce((s, l) => s + Number(l.final_agreed_amount_kd || 0), 0);
   const totalCommissions = leads.reduce((s, l) => s + Number(l.commission_amount_kwd || 0), 0);
-  const activeReps = reps.filter((r) => r.active_status).length;
+  const activeReps = reps.filter((r) => r.active_status && r.role !== "admin").length;
   const overdueCount = leads.filter(
     (l) =>
       l.followup_due_date &&
