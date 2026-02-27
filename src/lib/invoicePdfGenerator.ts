@@ -102,6 +102,66 @@ function drawSingleLineFooter(doc: jsPDF, pageW: number) {
   doc.text(footerText, pageW / 2, footerY, { align: "center" });
 }
 
+// ===== TERMS & CONDITIONS =====
+const TERMS_AND_CONDITIONS = [
+  { title: "Payment Terms", body: "All projects require either 100% advance payment before commencement, or 50% advance payment with the remaining 50% payable before final delivery/go-live. Work will not begin without the advance payment." },
+  { title: "Late or Pending Payments", body: "EKANI AI Consultancy reserves the right to pause or withhold project delivery, credentials, or live deployment until full payment is received." },
+  { title: "Scope of Work", body: "This invoice covers only the services specified in the approved quotation or agreement. Any additional features, revisions beyond agreed limits, or scope changes will be charged separately." },
+  { title: "Non-Refund Policy", body: "All payments are non-refundable once work has commenced, including consultation, AI setup, automation configuration, design, development, or strategy services." },
+  { title: "Project Timelines", body: "Delivery timelines depend on timely client approvals, content submission, and required access credentials. Client-side delays may extend the agreed timeline." },
+  { title: "Domain & Hosting", body: "Domain registration and hosting services are the responsibility of the client unless explicitly stated otherwise in the quotation. EKANI is not liable for hosting downtime, third-party server issues, or domain-related disputes." },
+  { title: "Third-Party Costs", body: "Any third-party costs including API usage (WhatsApp, AI tokens, SMS, payment gateways), plugins, integrations, or external subscriptions are billed separately unless clearly included in writing." },
+  { title: "Ownership & Intellectual Property", body: "Final deliverables will be transferred to the client only after full payment clearance. EKANI retains the right to showcase completed work for portfolio and marketing purposes unless agreed otherwise in writing." },
+  { title: "Service Suspension", body: "Ongoing services (maintenance, AI automation, marketing retainers, etc.) may be suspended if payments are overdue." },
+  { title: "Jurisdiction", body: "All agreements are governed by the laws of the State of Kuwait." },
+];
+
+function drawTermsAndConditions(doc: jsPDF, pageW: number, margin: number) {
+  doc.addPage();
+  let y = 18;
+
+  // Header
+  doc.setFontSize(14);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...BRAND_RED);
+  doc.text("Terms & Conditions", pageW / 2, y, { align: "center" });
+  y += 3;
+
+  doc.setDrawColor(...BRAND_RED);
+  doc.setLineWidth(0.5);
+  doc.line(margin, y, pageW - margin, y);
+  y += 6;
+
+  const maxW = pageW - margin * 2;
+  const pageH = doc.internal.pageSize.getHeight();
+
+  TERMS_AND_CONDITIONS.forEach((term, idx) => {
+    // Check if we need a new page
+    if (y > pageH - 30) {
+      drawSingleLineFooter(doc, pageW);
+      doc.addPage();
+      y = 18;
+    }
+
+    // Number + Title
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(...BRAND_TEAL);
+    doc.text(`${idx + 1}. ${term.title}`, margin, y);
+    y += 4;
+
+    // Body
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.setTextColor(...DARK);
+    const lines = doc.splitTextToSize(term.body, maxW);
+    doc.text(lines, margin, y);
+    y += lines.length * 3.2 + 3;
+  });
+
+  drawSingleLineFooter(doc, pageW);
+}
+
 // ===== INVOICE PDF =====
 interface InvoiceData {
   invoiceNumber: string;
@@ -112,6 +172,7 @@ interface InvoiceData {
   amountKd: number;
   paymentTerms?: string;
   notes?: string;
+  salesRepName?: string;
 }
 
 export async function generateInvoicePDF(data: InvoiceData): Promise<jsPDF> {
@@ -237,14 +298,29 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<jsPDF> {
     doc.text(noteLines, margin, y);
   }
 
+  // Sales Representative
+  if (data.salesRepName) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(...BRAND_TEAL);
+    doc.text("Sales Representative", margin, y);
+    y += 4;
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...DARK);
+    doc.text(data.salesRepName, margin, y);
+    y += 8;
+  }
+
   // Thank you
-  const pageH = doc.internal.pageSize.getHeight();
   doc.setFontSize(8);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...BRAND_TEAL);
-  doc.text("Thank you for your business.", pageW / 2, pageH - 16, { align: "center" });
+  doc.text("Thank you for your business.", pageW / 2, y + 4, { align: "center" });
 
   drawSingleLineFooter(doc, pageW);
+
+  // Terms & Conditions on page 2
+  drawTermsAndConditions(doc, pageW, margin);
 
   return doc;
 }
