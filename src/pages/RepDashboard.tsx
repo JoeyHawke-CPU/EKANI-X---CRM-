@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, TrendingUp, CheckCircle, DollarSign, AlertTriangle, Clock, Briefcase, Plus, Search, Eye, Forward, Download, MessageCircle, Mail, FileText, Receipt } from "lucide-react";
+import { Users, TrendingUp, CheckCircle, DollarSign, AlertTriangle, Clock, Briefcase, Plus, Search, Eye, Forward, Download, MessageCircle, Mail, FileText, Receipt, Pencil } from "lucide-react";
 import LeadForm from "@/components/LeadForm";
 import { LEAD_STATUSES } from "@/lib/constants";
 import { generateInvoicePDF, generateReceiptPDF } from "@/lib/invoicePdfGenerator";
@@ -138,11 +138,41 @@ const ForwardPopover = ({ lead, size = "sm", userId, profileName }: { lead: Lead
 };
 
 const RepDashboard = () => {
-  const { user, profile } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const [editLead, setEditLead] = useState<LeadRow | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState({ full_name: "", civil_id: "", contact_number: "" });
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  const openEditProfile = () => {
+    setProfileForm({
+      full_name: profile?.full_name || "",
+      civil_id: profile?.civil_id || "",
+      contact_number: profile?.contact_number || "",
+    });
+    setShowEditProfile(true);
+  };
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    setSavingProfile(true);
+    const { error } = await supabase
+      .from("sales_executives")
+      .update({
+        full_name: profileForm.full_name,
+        civil_id: profileForm.civil_id || null,
+        contact_number: profileForm.contact_number || null,
+      })
+      .eq("user_id", user.id);
+    setSavingProfile(false);
+    if (error) { toast.error(error.message); return; }
+    await refreshProfile();
+    setShowEditProfile(false);
+    toast.success("Profile updated");
+  };
 
   const { data: leads = [] } = useQuery({
     queryKey: ["my-leads", user?.id],
@@ -250,8 +280,11 @@ const RepDashboard = () => {
 
         {/* My Profile Card */}
         <Card>
-          <CardHeader className="pb-2 px-4 pt-4">
+          <CardHeader className="pb-2 px-4 pt-4 flex flex-row items-center justify-between">
             <CardTitle className="text-sm md:text-base">My Profile</CardTitle>
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={openEditProfile} title="Edit Profile">
+              <Pencil className="h-4 w-4" />
+            </Button>
           </CardHeader>
           <CardContent className="px-4 pb-4">
             <div className="grid gap-3 grid-cols-2 lg:grid-cols-4 text-sm">
@@ -266,6 +299,32 @@ const RepDashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Edit Profile Dialog */}
+        <Dialog open={showEditProfile} onOpenChange={setShowEditProfile}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Profile</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 pt-2">
+              <div>
+                <label className="text-sm font-medium">Full Name</label>
+                <Input value={profileForm.full_name} onChange={(e) => setProfileForm((p) => ({ ...p, full_name: e.target.value }))} className="mt-1" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Civil ID</label>
+                <Input value={profileForm.civil_id} onChange={(e) => setProfileForm((p) => ({ ...p, civil_id: e.target.value }))} className="mt-1" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Contact Number</label>
+                <Input value={profileForm.contact_number} onChange={(e) => setProfileForm((p) => ({ ...p, contact_number: e.target.value }))} className="mt-1" />
+              </div>
+              <Button onClick={handleSaveProfile} disabled={savingProfile || !profileForm.full_name.trim()} className="w-full">
+                {savingProfile ? "Saving…" : "Save Changes"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Leads */}
         <Card>
