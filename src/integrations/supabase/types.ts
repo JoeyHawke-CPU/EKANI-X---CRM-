@@ -124,7 +124,7 @@ export type Database = {
           quoted_amount_kd: number
           refund_cancellation: boolean
           remarks: string | null
-          sales_exec_id: string
+          sales_exec_id: string | null
           solution_selected: string | null
           status: Database["public"]["Enums"]["lead_status"]
           timeline_days: number | null
@@ -166,7 +166,7 @@ export type Database = {
           quoted_amount_kd?: number
           refund_cancellation?: boolean
           remarks?: string | null
-          sales_exec_id: string
+          sales_exec_id?: string | null
           solution_selected?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
           timeline_days?: number | null
@@ -208,7 +208,7 @@ export type Database = {
           quoted_amount_kd?: number
           refund_cancellation?: boolean
           remarks?: string | null
-          sales_exec_id?: string
+          sales_exec_id?: string | null
           solution_selected?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
           timeline_days?: number | null
