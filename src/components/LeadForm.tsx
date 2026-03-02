@@ -83,6 +83,40 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onClose }) => {
     set("add_ons", Array.from(current).join(", "));
   };
 
+  // Parse solution_selected: may contain "Other: <text>"
+  const parseSolutions = (raw: string) => {
+    if (!raw) return { selected: [] as string[], otherText: "" };
+    const parts = raw.split(", ").filter(Boolean);
+    const otherPart = parts.find((p) => p.startsWith("Other:"));
+    const otherText = otherPart ? otherPart.replace("Other: ", "") : "";
+    const selected = parts.map((p) => (p.startsWith("Other:") ? "Other" : p));
+    return { selected, otherText };
+  };
+  const { selected: selectedSolutions, otherText: initialOtherText } = parseSolutions(form.solution_selected);
+  const [otherSolutionText, setOtherSolutionText] = useState(initialOtherText);
+
+  const toggleSolution = (sol: string) => {
+    const current = new Set(selectedSolutions);
+    if (current.has(sol)) {
+      current.delete(sol);
+      if (sol === "Other") setOtherSolutionText("");
+    } else {
+      current.add(sol);
+    }
+    buildSolutionString(current, sol === "Other" && !current.has("Other") ? "" : otherSolutionText);
+  };
+
+  const buildSolutionString = (sols: Set<string>, otherVal: string) => {
+    const parts = Array.from(sols).map((s) => (s === "Other" && otherVal ? `Other: ${otherVal}` : s === "Other" ? "Other" : s));
+    set("solution_selected", parts.join(", "));
+  };
+
+  const handleOtherTextChange = (val: string) => {
+    setOtherSolutionText(val);
+    const current = new Set(selectedSolutions);
+    buildSolutionString(current, val);
+  };
+
   const areas = form.governorate ? GOVERNORATE_AREAS[form.governorate] || [] : [];
 
   const handleSave = async () => {
@@ -248,14 +282,25 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onClose }) => {
       {/* Step 3: Financials */}
       {step === 2 && (
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
+          <div className="space-y-2 sm:col-span-2">
             <Label>Solution Selected *</Label>
-            <Select value={form.solution_selected} onValueChange={(v) => set("solution_selected", v)}>
-              <SelectTrigger><SelectValue placeholder="Select solution" /></SelectTrigger>
-              <SelectContent>
-                {SOLUTIONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            <div className="flex flex-wrap gap-3 pt-1">
+              {SOLUTIONS.map((s) => (
+                <label key={s} className="flex items-center gap-1.5 text-sm cursor-pointer">
+                  <Checkbox checked={selectedSolutions.includes(s)} onCheckedChange={() => toggleSolution(s)} />
+                  {s}
+                </label>
+              ))}
+            </div>
+            {selectedSolutions.includes("Other") && (
+              <Input
+                className="mt-2"
+                placeholder="Please specify the solution..."
+                value={otherSolutionText}
+                onChange={(e) => handleOtherTextChange(e.target.value)}
+                maxLength={100}
+              />
+            )}
           </div>
           <div className="space-y-2">
             <Label>Add-Ons</Label>
