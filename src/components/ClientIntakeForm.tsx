@@ -112,6 +112,7 @@ const defaultData: IntakeFormData = {
   addons_selected: [],
   working_hours_from: "",
   working_hours_to: "",
+  closed_days: [],
   template_shown: "",
   addons_summary: "",
   lockin_payment_received: "",
