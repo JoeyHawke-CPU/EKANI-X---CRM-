@@ -310,14 +310,28 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onClose }) => {
           </div>
           <div className="space-y-2">
             <Label>Add-Ons</Label>
-            <div className="flex flex-wrap gap-2 pt-1">
-              {ADD_ONS.map((a) => (
-                <label key={a} className="flex items-center gap-1.5 text-sm cursor-pointer">
-                  <Checkbox checked={selectedAddOns.includes(a)} onCheckedChange={() => toggleAddOn(a)} />
-                  {a}
-                </label>
-              ))}
-            </div>
+            <Select value={form.add_ons} onValueChange={(v) => set("add_ons", v)}>
+              <SelectTrigger><SelectValue placeholder="Select add-on" /></SelectTrigger>
+              <SelectContent>
+                {ADD_ONS.map((a) => (
+                  <SelectItem key={a} value={a}>{a}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label>Lock-In Payment Received</Label>
+            <Select value={form.lock_in_payment_received || ""} onValueChange={(v) => set("lock_in_payment_received", v)}>
+              <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Yes">Yes</SelectItem>
+                <SelectItem value="No">No</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label>Amount Received (KD)</Label>
+            <Input type="number" step="0.001" value={form.amount_received} onChange={(e) => set("amount_received", e.target.value)} placeholder="0.000" />
           </div>
           <div className="space-y-2">
             <Label>Quoted Amount (KD)</Label>
