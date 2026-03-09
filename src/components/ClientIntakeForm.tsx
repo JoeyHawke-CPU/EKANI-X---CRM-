@@ -481,8 +481,20 @@ const ClientIntakeForm: React.FC<ClientIntakeFormProps> = ({ initialData, onClos
             <Input value={form.template_shown} onChange={(e) => set("template_shown", e.target.value)} placeholder="e.g. EKANI-004" />
           </div>
           <div className="space-y-2 sm:col-span-2">
-            <Label>Add-ons selected</Label>
-            <Textarea value={form.addons_summary} onChange={(e) => set("addons_summary", e.target.value)} rows={3} placeholder="Summary of selected add-ons" />
+            <Label>Add-ons Selected</Label>
+            <div className="p-3 bg-muted rounded-md min-h-[60px]">
+              {form.addons_selected.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {form.addons_selected.map((addon) => (
+                    <span key={addon} className="px-2 py-1 bg-primary/10 text-primary text-sm rounded-md">
+                      {addon}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <span className="text-muted-foreground text-sm">No add-ons selected</span>
+              )}
+            </div>
           </div>
           <div className="space-y-3">
             <Label>KD 10 Lock-in Payment Received?</Label>
