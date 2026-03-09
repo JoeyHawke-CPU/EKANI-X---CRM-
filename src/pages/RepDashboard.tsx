@@ -147,6 +147,7 @@ const RepDashboard = () => {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [profileForm, setProfileForm] = useState({ full_name: "", civil_id: "", contact_number: "" });
   const [savingProfile, setSavingProfile] = useState(false);
+  const [intakeLead, setIntakeLead] = useState<LeadRow | null>(null);
 
   const openEditProfile = () => {
     setProfileForm({
