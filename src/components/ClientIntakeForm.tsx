@@ -16,6 +16,7 @@ import {
   INTAKE_ADD_ONS,
   CONTACT_METHODS,
   INTAKE_SECTIONS,
+  WORKING_HOURS_OPTIONS,
 } from "@/lib/intakeFormConstants";
 
 export interface IntakeFormData {
@@ -36,6 +37,7 @@ export interface IntakeFormData {
   // Section 3
   has_website: string;
   existing_url: string;
+  prefixes_required: string;
   preferred_domain: string;
   // Section 4
   pages_selected: string[];
@@ -59,8 +61,8 @@ export interface IntakeFormData {
   // Section 9
   addons_selected: string[];
   // Section 10
-  working_hours: string;
-  booking_services: string;
+  working_hours_from: string;
+  working_hours_to: string;
   // Section 11
   template_shown: string;
   addons_summary: string;
@@ -89,6 +91,7 @@ const defaultData: IntakeFormData = {
   google_maps_link: "",
   has_website: "",
   existing_url: "",
+  prefixes_required: "",
   preferred_domain: "",
   pages_selected: [],
   additional_pages: "",
@@ -105,8 +108,8 @@ const defaultData: IntakeFormData = {
   whatsapp_for_website: "",
   default_whatsapp_message: "",
   addons_selected: [],
-  working_hours: "",
-  booking_services: "",
+  working_hours_from: "",
+  working_hours_to: "",
   template_shown: "",
   addons_summary: "",
   lockin_payment_received: "",
@@ -278,6 +281,10 @@ const ClientIntakeForm: React.FC<ClientIntakeFormProps> = ({ initialData, onClos
             </div>
           )}
           <div className="space-y-2 sm:col-span-2">
+            <Label>Prefixes Required</Label>
+            <Input value={form.prefixes_required} onChange={(e) => set("prefixes_required", e.target.value)} placeholder="e.g. www, shop, blog" />
+          </div>
+          <div className="space-y-2 sm:col-span-2">
             <Label>Preferred Domain Name (if creating new website)</Label>
             <Input value={form.preferred_domain} onChange={(e) => set("preferred_domain", e.target.value)} placeholder="www.businessname.com" />
           </div>
@@ -444,14 +451,24 @@ const ClientIntakeForm: React.FC<ClientIntakeFormProps> = ({ initialData, onClos
 
       {/* Section 10 — Booking / Appointment */}
       {section === 9 && (
-        <div className="grid gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label>Working Hours</Label>
-            <Input value={form.working_hours} onChange={(e) => set("working_hours", e.target.value)} placeholder="e.g. 9am – 9pm" />
+            <Label>Working Hours From</Label>
+            <Select value={form.working_hours_from} onValueChange={(v) => set("working_hours_from", v)}>
+              <SelectTrigger><SelectValue placeholder="Select start time" /></SelectTrigger>
+              <SelectContent>
+                {WORKING_HOURS_OPTIONS.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
-            <Label>Services available for booking</Label>
-            <Textarea value={form.booking_services} onChange={(e) => set("booking_services", e.target.value)} rows={3} />
+            <Label>Working Hours To</Label>
+            <Select value={form.working_hours_to} onValueChange={(v) => set("working_hours_to", v)}>
+              <SelectTrigger><SelectValue placeholder="Select end time" /></SelectTrigger>
+              <SelectContent>
+                {WORKING_HOURS_OPTIONS.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       )}
@@ -464,8 +481,20 @@ const ClientIntakeForm: React.FC<ClientIntakeFormProps> = ({ initialData, onClos
             <Input value={form.template_shown} onChange={(e) => set("template_shown", e.target.value)} placeholder="e.g. EKANI-004" />
           </div>
           <div className="space-y-2 sm:col-span-2">
-            <Label>Add-ons selected</Label>
-            <Textarea value={form.addons_summary} onChange={(e) => set("addons_summary", e.target.value)} rows={3} placeholder="Summary of selected add-ons" />
+            <Label>Add-ons Selected</Label>
+            <div className="p-3 bg-muted rounded-md min-h-[60px]">
+              {form.addons_selected.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {form.addons_selected.map((addon) => (
+                    <span key={addon} className="px-2 py-1 bg-primary/10 text-primary text-sm rounded-md">
+                      {addon}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <span className="text-muted-foreground text-sm">No add-ons selected</span>
+              )}
+            </div>
           </div>
           <div className="space-y-3">
             <Label>KD 10 Lock-in Payment Received?</Label>
