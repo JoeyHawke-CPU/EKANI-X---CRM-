@@ -64,6 +64,7 @@ export interface IntakeFormData {
   // Section 10
   working_hours_from: string;
   working_hours_to: string;
+  closed_days: string[];
   // Section 11
   template_shown: string;
   addons_summary: string;
