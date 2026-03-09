@@ -37,6 +37,7 @@ export interface IntakeFormData {
   // Section 3
   has_website: string;
   existing_url: string;
+  prefixes_required: string;
   preferred_domain: string;
   // Section 4
   pages_selected: string[];
