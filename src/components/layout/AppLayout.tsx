@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Users, BarChart3, FileText, Receipt, Menu, ClipboardList } from "lucide-react";
+import { LogOut, LayoutDashboard, Users, BarChart3, FileText, Receipt, Menu } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -19,13 +19,11 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         { label: "Analytics", href: "/analytics", icon: BarChart3 },
         { label: "Reports", href: "/admin-reports", icon: FileText },
         { label: "Invoices", href: "/invoices", icon: Receipt },
-        { label: "Intake Form", href: "/intake", icon: ClipboardList },
       ]
     : [
         { label: "Dashboard", href: "/", icon: LayoutDashboard },
         { label: "Reports", href: "/reports", icon: FileText },
         { label: "Invoices", href: "/invoices", icon: Receipt },
-        { label: "Intake Form", href: "/intake", icon: ClipboardList },
       ];
 
   return (
