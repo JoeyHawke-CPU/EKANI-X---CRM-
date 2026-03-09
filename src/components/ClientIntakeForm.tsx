@@ -61,8 +61,8 @@ export interface IntakeFormData {
   // Section 9
   addons_selected: string[];
   // Section 10
-  working_hours: string;
-  booking_services: string;
+  working_hours_from: string;
+  working_hours_to: string;
   // Section 11
   template_shown: string;
   addons_summary: string;
