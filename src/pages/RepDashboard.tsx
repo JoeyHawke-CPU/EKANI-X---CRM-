@@ -10,8 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, TrendingUp, CheckCircle, DollarSign, AlertTriangle, Clock, Briefcase, Plus, Search, Eye, Forward, Download, MessageCircle, Mail, FileText, Receipt, Pencil } from "lucide-react";
+import { Users, TrendingUp, CheckCircle, DollarSign, AlertTriangle, Clock, Briefcase, Plus, Search, Eye, Forward, Download, MessageCircle, Mail, FileText, Receipt, Pencil, ClipboardList } from "lucide-react";
 import LeadForm from "@/components/LeadForm";
+import ClientIntakeForm from "@/components/ClientIntakeForm";
 import { LEAD_STATUSES } from "@/lib/constants";
 import { generateInvoicePDF, generateReceiptPDF } from "@/lib/invoicePdfGenerator";
 import { toast } from "sonner";
@@ -105,7 +106,7 @@ const quickReceipt = async (lead: LeadRow, userId: string) => {
   toast.success(`Receipt ${(data as any).receipt_number} generated`);
 };
 
-const ForwardPopover = ({ lead, size = "sm", userId, profileName }: { lead: LeadRow; size?: "sm" | "md"; userId: string; profileName?: string }) => {
+const ForwardPopover = ({ lead, size = "sm", userId, profileName, onIntake }: { lead: LeadRow; size?: "sm" | "md"; userId: string; profileName?: string; onIntake?: () => void }) => {
   const iconSize = size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4";
   const btnSize = size === "sm" ? "h-7 w-7" : "h-8 w-8";
   return (
@@ -124,6 +125,9 @@ const ForwardPopover = ({ lead, size = "sm", userId, profileName }: { lead: Lead
         </button>
         <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-muted transition-colors" onClick={() => quickReceipt(lead, userId)}>
           <Receipt className="h-4 w-4 text-muted-foreground" /> Generate Receipt
+        </button>
+        <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-muted transition-colors" onClick={onIntake}>
+          <ClipboardList className="h-4 w-4 text-muted-foreground" /> Intake Form
         </button>
         <hr className="my-1 border-border" />
         <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-muted transition-colors" onClick={() => shareViaWhatsApp(lead)}>
@@ -146,6 +150,7 @@ const RepDashboard = () => {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [profileForm, setProfileForm] = useState({ full_name: "", civil_id: "", contact_number: "" });
   const [savingProfile, setSavingProfile] = useState(false);
+  const [intakeLead, setIntakeLead] = useState<LeadRow | null>(null);
 
   const openEditProfile = () => {
     setProfileForm({
@@ -368,7 +373,7 @@ const RepDashboard = () => {
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditLead(lead); setShowForm(true); }}>
                             <Eye className="h-3.5 w-3.5 text-muted-foreground" />
                           </Button>
-                          <ForwardPopover lead={lead} size="sm" userId={user?.id || ""} profileName={profile?.full_name} />
+                          <ForwardPopover lead={lead} size="sm" userId={user?.id || ""} profileName={profile?.full_name} onIntake={() => setIntakeLead(lead)} />
                         </div>
                       </div>
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -416,7 +421,7 @@ const RepDashboard = () => {
                               <Button variant="ghost" size="icon" className="h-8 w-8" title="View" onClick={() => { setEditLead(lead); setShowForm(true); }}>
                                 <Eye className="h-4 w-4 text-muted-foreground" />
                               </Button>
-                              <ForwardPopover lead={lead} size="md" userId={user?.id || ""} profileName={profile?.full_name} />
+                              <ForwardPopover lead={lead} size="md" userId={user?.id || ""} profileName={profile?.full_name} onIntake={() => setIntakeLead(lead)} />
                             </div>
                           </td>
                         </tr>
@@ -437,6 +442,29 @@ const RepDashboard = () => {
             <DialogTitle>{editLead ? "Edit Lead" : "New Lead"}</DialogTitle>
           </DialogHeader>
           <LeadForm lead={editLead} onClose={() => setShowForm(false)} />
+        </DialogContent>
+      </Dialog>
+
+      {/* Intake Form Dialog */}
+      <Dialog open={!!intakeLead} onOpenChange={() => setIntakeLead(null)}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Client Website Intake Form</DialogTitle>
+          </DialogHeader>
+          {intakeLead && (
+            <ClientIntakeForm
+              initialData={{
+                sales_exec_name: profile?.full_name || "",
+                client_name: intakeLead.client_contact_person || "",
+                business_name: intakeLead.client_business_name || "",
+                phone_number: intakeLead.phone_number || "",
+                whatsapp_number: intakeLead.whatsapp_number || "",
+                email: intakeLead.email || "",
+                business_address: intakeLead.business_full_address || "",
+              }}
+              onClose={() => setIntakeLead(null)}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </AppLayout>

@@ -11,11 +11,12 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, Search, Edit2, Trash2, Eye, Download, FileText, FileSpreadsheet } from "lucide-react";
+import { Users, Search, Edit2, Trash2, Eye, Download, FileText, FileSpreadsheet, ClipboardList } from "lucide-react";
 import { downloadCSV, downloadPDF } from "@/lib/exportUtils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import LeadForm from "@/components/LeadForm";
+import ClientIntakeForm from "@/components/ClientIntakeForm";
 import type { Database } from "@/integrations/supabase/types";
 
 type RepRow = Database["public"]["Tables"]["sales_executives"]["Row"];
@@ -29,6 +30,7 @@ const AdminReps = () => {
   const [editRep, setEditRep] = useState<RepRow | null>(null);
   const [viewLeadsRep, setViewLeadsRep] = useState<RepRow | null>(null);
   const [editLead, setEditLead] = useState<LeadRow | null>(null);
+  const [intakeLead, setIntakeLead] = useState<LeadRow | null>(null);
 
   const { data: reps = [] } = useQuery({
     queryKey: ["admin-reps"],
@@ -356,9 +358,14 @@ const AdminReps = () => {
                             <Badge variant="secondary" className="text-xs font-normal">{lead.status}</Badge>
                           </td>
                           <td className="py-2.5">
-                            <Button variant="ghost" size="sm" className="gap-1.5 h-7" onClick={() => setEditLead(lead)}>
-                              <Eye className="h-3.5 w-3.5" /> View
-                            </Button>
+                            <div className="flex items-center gap-1">
+                              <Button variant="ghost" size="sm" className="gap-1.5 h-7" onClick={() => setEditLead(lead)}>
+                                <Eye className="h-3.5 w-3.5" /> View
+                              </Button>
+                              <Button variant="ghost" size="sm" className="gap-1.5 h-7" onClick={() => setIntakeLead(lead)} title="Intake Form">
+                                <ClipboardList className="h-3.5 w-3.5" /> Intake
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -379,6 +386,28 @@ const AdminReps = () => {
               <DialogTitle>Lead #{editLead.lead_id} — {editLead.client_business_name}</DialogTitle>
             </DialogHeader>
             <LeadForm lead={editLead} onClose={() => { setEditLead(null); queryClient.invalidateQueries({ queryKey: ["admin-leads"] }); }} />
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Intake Form Dialog (admin) */}
+      {intakeLead && (
+        <Dialog open={!!intakeLead} onOpenChange={() => setIntakeLead(null)}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Client Website Intake Form</DialogTitle>
+            </DialogHeader>
+            <ClientIntakeForm
+              initialData={{
+                client_name: intakeLead.client_contact_person || "",
+                business_name: intakeLead.client_business_name || "",
+                phone_number: intakeLead.phone_number || "",
+                whatsapp_number: intakeLead.whatsapp_number || "",
+                email: intakeLead.email || "",
+                business_address: intakeLead.business_full_address || "",
+              }}
+              onClose={() => setIntakeLead(null)}
+            />
           </DialogContent>
         </Dialog>
       )}
