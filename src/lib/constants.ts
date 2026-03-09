@@ -38,7 +38,22 @@ export const SOLUTIONS = [
 ];
 
 export const ADD_ONS = [
-  "Maintenance", "SEO-AEO", "Marketing", "Extra Pages", "E-Commerce",
+  "Smart Contact Form",
+  "Strategy Consultation",
+  "AI Appointment Booking Bot",
+  "Extra Pages (Up to 5)",
+  "Google My Business Setup",
+  "Google Analytics Setup",
+  "Social Media Setup",
+  "Content Writing (Full Website)",
+  "WhatsApp Automation",
+  "AI Chatbot",
+  "Pop-Up Campaign Setup",
+  "AI Content Generation",
+  "Advanced AEO",
+  "WhatsApp Business API",
+  "E-Commerce Capabilities",
+  "Payment Gateway Integration",
 ];
 
 export const LEAD_STATUSES = [
