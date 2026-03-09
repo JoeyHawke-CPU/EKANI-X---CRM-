@@ -71,6 +71,8 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onClose }) => {
     remarks: lead?.remarks || "",
     delivery_tracking_status: (lead as any)?.delivery_tracking_status || "Ongoing",
     status: lead?.status || "New Lead",
+    lock_in_payment_received: (lead as any)?.lock_in_payment_received || "",
+    amount_received: (lead as any)?.amount_received?.toString() || "",
   });
 
   const set = (key: string, value: any) => setForm((p) => ({ ...p, [key]: value }));
