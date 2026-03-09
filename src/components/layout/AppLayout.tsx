@@ -19,11 +19,13 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         { label: "Analytics", href: "/analytics", icon: BarChart3 },
         { label: "Reports", href: "/admin-reports", icon: FileText },
         { label: "Invoices", href: "/invoices", icon: Receipt },
+        { label: "Intake Form", href: "/intake", icon: ClipboardList },
       ]
     : [
         { label: "Dashboard", href: "/", icon: LayoutDashboard },
         { label: "Reports", href: "/reports", icon: FileText },
         { label: "Invoices", href: "/invoices", icon: Receipt },
+        { label: "Intake Form", href: "/intake", icon: ClipboardList },
       ];
 
   return (

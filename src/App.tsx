@@ -80,6 +80,14 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/intake"
+              element={
+                <ProtectedRoute>
+                  <IntakeFormPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
