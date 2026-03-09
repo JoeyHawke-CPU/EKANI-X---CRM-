@@ -393,7 +393,7 @@ const AdminReps = () => {
       {/* Intake Form Dialog (admin) */}
       {intakeLead && (
         <Dialog open={!!intakeLead} onOpenChange={() => setIntakeLead(null)}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+           <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Client Website Intake Form</DialogTitle>
             </DialogHeader>
