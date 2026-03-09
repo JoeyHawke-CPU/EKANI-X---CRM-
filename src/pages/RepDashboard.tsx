@@ -373,6 +373,9 @@ const RepDashboard = () => {
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditLead(lead); setShowForm(true); }}>
                             <Eye className="h-3.5 w-3.5 text-muted-foreground" />
                           </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" title="Intake Form" onClick={() => setIntakeLead(lead)}>
+                            <ClipboardList className="h-3.5 w-3.5 text-muted-foreground" />
+                          </Button>
                           <ForwardPopover lead={lead} size="sm" userId={user?.id || ""} profileName={profile?.full_name} onIntake={() => setIntakeLead(lead)} />
                         </div>
                       </div>
@@ -420,6 +423,9 @@ const RepDashboard = () => {
                             <div className="flex items-center gap-1">
                               <Button variant="ghost" size="icon" className="h-8 w-8" title="View" onClick={() => { setEditLead(lead); setShowForm(true); }}>
                                 <Eye className="h-4 w-4 text-muted-foreground" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-8 w-8" title="Intake Form" onClick={() => setIntakeLead(lead)}>
+                                <ClipboardList className="h-4 w-4 text-muted-foreground" />
                               </Button>
                               <ForwardPopover lead={lead} size="md" userId={user?.id || ""} profileName={profile?.full_name} onIntake={() => setIntakeLead(lead)} />
                             </div>
