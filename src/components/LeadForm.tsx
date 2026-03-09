@@ -260,7 +260,13 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onClose }) => {
           </div>
           <div className="space-y-2">
             <Label>Domain Status</Label>
-            <Input value={form.domain_status} onChange={(e) => set("domain_status", e.target.value)} placeholder="e.g. Has domain, Needs domain" />
+            <Select value={form.domain_status} onValueChange={(v) => set("domain_status", v)}>
+              <SelectTrigger><SelectValue placeholder="Select domain status" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Has a domain">Has a domain</SelectItem>
+                <SelectItem value="Needs a domain">Needs a domain</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label>Timeline (days)</Label>
