@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import {
   CLIENT_SOURCES,
   INDUSTRY_TYPES,
@@ -134,19 +135,36 @@ const ClientIntakeForm: React.FC<ClientIntakeFormProps> = ({ initialData, onClos
     });
   };
 
-  const handleSubmit = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
     if (!form.client_name && !form.business_name) {
       toast.error("Please fill in at least the client or business name");
       return;
     }
-    // For now, copy to clipboard as JSON (Google Sheets integration later)
-    const json = JSON.stringify(form, null, 2);
-    navigator.clipboard.writeText(json).then(() => {
-      toast.success("Intake form data copied to clipboard! Google Sheets integration coming soon.");
-    }).catch(() => {
-      toast.success("Intake form completed! Google Sheets integration coming soon.");
-    });
-    console.log("Intake Form Data:", form);
+
+    setIsSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("submit-intake-form", {
+        body: form,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.success) {
+        toast.success("Intake form submitted to Google Sheets!");
+        onClose();
+      } else {
+        throw new Error(data?.error || "Failed to submit form");
+      }
+    } catch (error) {
+      console.error("Error submitting intake form:", error);
+      toast.error("Failed to submit form. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const progressPercent = ((section + 1) / INTAKE_SECTIONS.length) * 100;
@@ -539,8 +557,8 @@ const ClientIntakeForm: React.FC<ClientIntakeFormProps> = ({ initialData, onClos
         {section < INTAKE_SECTIONS.length - 1 ? (
           <Button onClick={() => setSection(section + 1)}>Next</Button>
         ) : (
-          <Button onClick={handleSubmit}>
-            Submit Intake Form
+          <Button onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? "Submitting..." : "Submit Intake Form"}
           </Button>
         )}
       </div>
