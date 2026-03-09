@@ -16,6 +16,7 @@ import { downloadCSV, downloadPDF } from "@/lib/exportUtils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import LeadForm from "@/components/LeadForm";
+import ClientIntakeForm from "@/components/ClientIntakeForm";
 import type { Database } from "@/integrations/supabase/types";
 
 type RepRow = Database["public"]["Tables"]["sales_executives"]["Row"];
