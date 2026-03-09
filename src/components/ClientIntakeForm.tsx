@@ -64,6 +64,7 @@ export interface IntakeFormData {
   // Section 10
   working_hours_from: string;
   working_hours_to: string;
+  closed_days: string[];
   // Section 11
   template_shown: string;
   addons_summary: string;
@@ -111,6 +112,7 @@ const defaultData: IntakeFormData = {
   addons_selected: [],
   working_hours_from: "",
   working_hours_to: "",
+  closed_days: [],
   template_shown: "",
   addons_summary: "",
   lockin_payment_received: "",
@@ -125,7 +127,7 @@ const ClientIntakeForm: React.FC<ClientIntakeFormProps> = ({ initialData, onClos
   const set = (key: keyof IntakeFormData, value: any) =>
     setForm((p) => ({ ...p, [key]: value }));
 
-  const toggleArray = (key: "pages_selected" | "images_available" | "addons_selected", value: string) => {
+  const toggleArray = (key: "pages_selected" | "images_available" | "addons_selected" | "closed_days", value: string) => {
     setForm((p) => {
       const arr = p[key] as string[];
       const s = new Set(arr);
@@ -487,6 +489,20 @@ const ClientIntakeForm: React.FC<ClientIntakeFormProps> = ({ initialData, onClos
                 {WORKING_HOURS_OPTIONS.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
               </SelectContent>
             </Select>
+          </div>
+          <div className="space-y-3 sm:col-span-2">
+            <Label>Closed Days</Label>
+            <div className="flex flex-wrap gap-3">
+              {["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map((day) => (
+                <label key={day} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <Checkbox
+                    checked={form.closed_days.includes(day)}
+                    onCheckedChange={() => toggleArray("closed_days", day)}
+                  />
+                  {day}
+                </label>
+              ))}
+            </div>
           </div>
         </div>
       )}

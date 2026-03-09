@@ -39,6 +39,7 @@ interface IntakeFormData {
   addons_selected: string[];
   working_hours_from: string;
   working_hours_to: string;
+  closed_days: string[];
   template_shown: string;
   lockin_payment_received: string;
   payment_received: string;
@@ -158,6 +159,7 @@ async function appendToSheet(accessToken: string, spreadsheetId: string, data: I
       data.addons_selected.join(", "),
       data.working_hours_from,
       data.working_hours_to,
+      data.closed_days.join(", "),
       data.template_shown,
       data.lockin_payment_received,
       data.payment_received,
