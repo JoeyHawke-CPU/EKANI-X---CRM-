@@ -14,6 +14,170 @@ export type Database = {
   }
   public: {
     Tables: {
+      intake_forms: {
+        Row: {
+          additional_pages: string | null
+          addons_selected: string[] | null
+          addons_summary: string | null
+          amount_received: number | null
+          booking_services: string | null
+          business_address: string | null
+          business_name: string | null
+          client_name: string | null
+          client_source: string | null
+          created_at: string
+          created_by: string
+          date_of_meeting: string | null
+          default_whatsapp_message: string | null
+          email: string | null
+          existing_url: string | null
+          facebook_link: string | null
+          google_maps_link: string | null
+          has_website: string | null
+          id: string
+          images_available: string[] | null
+          industry_other: string | null
+          industry_type: string | null
+          instagram_link: string | null
+          lead_id: number | null
+          lockin_payment_received: string | null
+          needs_content_writing: string | null
+          other_social: string | null
+          pages_selected: string[] | null
+          payment_received: string | null
+          phone_number: string | null
+          preferred_domain: string | null
+          primary_contact_method: string | null
+          sales_exec_name: string | null
+          services_products: string | null
+          show_pricing: string | null
+          template_shown: string | null
+          tiktok_link: string | null
+          updated_at: string
+          whatsapp_for_website: string | null
+          whatsapp_number: string | null
+          will_provide_logo: string | null
+          working_hours: string | null
+        }
+        Insert: {
+          additional_pages?: string | null
+          addons_selected?: string[] | null
+          addons_summary?: string | null
+          amount_received?: number | null
+          booking_services?: string | null
+          business_address?: string | null
+          business_name?: string | null
+          client_name?: string | null
+          client_source?: string | null
+          created_at?: string
+          created_by: string
+          date_of_meeting?: string | null
+          default_whatsapp_message?: string | null
+          email?: string | null
+          existing_url?: string | null
+          facebook_link?: string | null
+          google_maps_link?: string | null
+          has_website?: string | null
+          id?: string
+          images_available?: string[] | null
+          industry_other?: string | null
+          industry_type?: string | null
+          instagram_link?: string | null
+          lead_id?: number | null
+          lockin_payment_received?: string | null
+          needs_content_writing?: string | null
+          other_social?: string | null
+          pages_selected?: string[] | null
+          payment_received?: string | null
+          phone_number?: string | null
+          preferred_domain?: string | null
+          primary_contact_method?: string | null
+          sales_exec_name?: string | null
+          services_products?: string | null
+          show_pricing?: string | null
+          template_shown?: string | null
+          tiktok_link?: string | null
+          updated_at?: string
+          whatsapp_for_website?: string | null
+          whatsapp_number?: string | null
+          will_provide_logo?: string | null
+          working_hours?: string | null
+        }
+        Update: {
+          additional_pages?: string | null
+          addons_selected?: string[] | null
+          addons_summary?: string | null
+          amount_received?: number | null
+          booking_services?: string | null
+          business_address?: string | null
+          business_name?: string | null
+          client_name?: string | null
+          client_source?: string | null
+          created_at?: string
+          created_by?: string
+          date_of_meeting?: string | null
+          default_whatsapp_message?: string | null
+          email?: string | null
+          existing_url?: string | null
+          facebook_link?: string | null
+          google_maps_link?: string | null
+          has_website?: string | null
+          id?: string
+          images_available?: string[] | null
+          industry_other?: string | null
+          industry_type?: string | null
+          instagram_link?: string | null
+          lead_id?: number | null
+          lockin_payment_received?: string | null
+          needs_content_writing?: string | null
+          other_social?: string | null
+          pages_selected?: string[] | null
+          payment_received?: string | null
+          phone_number?: string | null
+          preferred_domain?: string | null
+          primary_contact_method?: string | null
+          sales_exec_name?: string | null
+          services_products?: string | null
+          show_pricing?: string | null
+          template_shown?: string | null
+          tiktok_link?: string | null
+          updated_at?: string
+          whatsapp_for_website?: string | null
+          whatsapp_number?: string | null
+          will_provide_logo?: string | null
+          working_hours?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_forms_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["lead_id"]
+          },
+          {
+            foreignKeyName: "intake_forms_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "v_admin_leads_export"
+            referencedColumns: ["lead_id"]
+          },
+          {
+            foreignKeyName: "intake_forms_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "v_commission_payout_report"
+            referencedColumns: ["lead_id"]
+          },
+          {
+            foreignKeyName: "intake_forms_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "v_my_leads_export"
+            referencedColumns: ["lead_id"]
+          },
+        ]
+      }
       invoices: {
         Row: {
           amount_kd: number
