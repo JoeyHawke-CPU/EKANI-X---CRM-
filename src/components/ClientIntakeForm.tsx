@@ -127,7 +127,7 @@ const ClientIntakeForm: React.FC<ClientIntakeFormProps> = ({ initialData, onClos
   const set = (key: keyof IntakeFormData, value: any) =>
     setForm((p) => ({ ...p, [key]: value }));
 
-  const toggleArray = (key: "pages_selected" | "images_available" | "addons_selected", value: string) => {
+  const toggleArray = (key: "pages_selected" | "images_available" | "addons_selected" | "closed_days", value: string) => {
     setForm((p) => {
       const arr = p[key] as string[];
       const s = new Set(arr);
