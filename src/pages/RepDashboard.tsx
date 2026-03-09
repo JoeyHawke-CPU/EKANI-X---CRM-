@@ -421,7 +421,7 @@ const RepDashboard = () => {
                               <Button variant="ghost" size="icon" className="h-8 w-8" title="View" onClick={() => { setEditLead(lead); setShowForm(true); }}>
                                 <Eye className="h-4 w-4 text-muted-foreground" />
                               </Button>
-                              <ForwardPopover lead={lead} size="md" userId={user?.id || ""} profileName={profile?.full_name} />
+                              <ForwardPopover lead={lead} size="md" userId={user?.id || ""} profileName={profile?.full_name} onIntake={() => setIntakeLead(lead)} />
                             </div>
                           </td>
                         </tr>
