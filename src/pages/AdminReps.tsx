@@ -30,6 +30,7 @@ const AdminReps = () => {
   const [editRep, setEditRep] = useState<RepRow | null>(null);
   const [viewLeadsRep, setViewLeadsRep] = useState<RepRow | null>(null);
   const [editLead, setEditLead] = useState<LeadRow | null>(null);
+  const [intakeLead, setIntakeLead] = useState<LeadRow | null>(null);
 
   const { data: reps = [] } = useQuery({
     queryKey: ["admin-reps"],
