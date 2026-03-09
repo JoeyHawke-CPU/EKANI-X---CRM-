@@ -370,10 +370,8 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onClose }) => {
           <div className="space-y-3 sm:col-span-2 pt-2">
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {([
-                ["intake_form_completed", "Intake Form Completed"],
                 ["payment_link_sent", "Payment Link Sent"],
                 ["payment_received", "Payment Received"],
-                ["invoice_generated", "Invoice Generated"],
                 ["followup_7day_completed", "7-Day Follow-up Done"],
                 ["refund_cancellation", "Refund / Cancellation"],
                 ["escalation_required", "Escalation Required"],
