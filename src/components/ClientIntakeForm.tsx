@@ -122,7 +122,15 @@ const defaultData: IntakeFormData = {
 
 const ClientIntakeForm: React.FC<ClientIntakeFormProps> = ({ initialData, onClose }) => {
   const [section, setSection] = useState(0);
-  const [form, setForm] = useState<IntakeFormData>({ ...defaultData, ...initialData });
+  const [form, setForm] = useState<IntakeFormData>(() => {
+    const merged = { ...defaultData, ...initialData };
+    // Ensure array fields are never undefined
+    merged.pages_selected = merged.pages_selected ?? [];
+    merged.images_available = merged.images_available ?? [];
+    merged.addons_selected = merged.addons_selected ?? [];
+    merged.closed_days = merged.closed_days ?? [];
+    return merged;
+  });
 
   const set = (key: keyof IntakeFormData, value: any) =>
     setForm((p) => ({ ...p, [key]: value }));
