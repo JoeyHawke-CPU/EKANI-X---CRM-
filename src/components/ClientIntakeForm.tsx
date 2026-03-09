@@ -557,8 +557,8 @@ const ClientIntakeForm: React.FC<ClientIntakeFormProps> = ({ initialData, onClos
         {section < INTAKE_SECTIONS.length - 1 ? (
           <Button onClick={() => setSection(section + 1)}>Next</Button>
         ) : (
-          <Button onClick={handleSubmit}>
-            Submit Intake Form
+          <Button onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? "Submitting..." : "Submit Intake Form"}
           </Button>
         )}
       </div>
