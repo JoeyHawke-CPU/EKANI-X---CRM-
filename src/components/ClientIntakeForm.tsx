@@ -91,6 +91,7 @@ const defaultData: IntakeFormData = {
   google_maps_link: "",
   has_website: "",
   existing_url: "",
+  prefixes_required: "",
   preferred_domain: "",
   pages_selected: [],
   additional_pages: "",
