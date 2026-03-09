@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, Search, Edit2, Trash2, Eye, Download, FileText, FileSpreadsheet } from "lucide-react";
+import { Users, Search, Edit2, Trash2, Eye, Download, FileText, FileSpreadsheet, ClipboardList } from "lucide-react";
 import { downloadCSV, downloadPDF } from "@/lib/exportUtils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
