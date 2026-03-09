@@ -451,14 +451,24 @@ const ClientIntakeForm: React.FC<ClientIntakeFormProps> = ({ initialData, onClos
 
       {/* Section 10 — Booking / Appointment */}
       {section === 9 && (
-        <div className="grid gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label>Working Hours</Label>
-            <Input value={form.working_hours} onChange={(e) => set("working_hours", e.target.value)} placeholder="e.g. 9am – 9pm" />
+            <Label>Working Hours From</Label>
+            <Select value={form.working_hours_from} onValueChange={(v) => set("working_hours_from", v)}>
+              <SelectTrigger><SelectValue placeholder="Select start time" /></SelectTrigger>
+              <SelectContent>
+                {WORKING_HOURS_OPTIONS.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
-            <Label>Services available for booking</Label>
-            <Textarea value={form.booking_services} onChange={(e) => set("booking_services", e.target.value)} rows={3} />
+            <Label>Working Hours To</Label>
+            <Select value={form.working_hours_to} onValueChange={(v) => set("working_hours_to", v)}>
+              <SelectTrigger><SelectValue placeholder="Select end time" /></SelectTrigger>
+              <SelectContent>
+                {WORKING_HOURS_OPTIONS.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       )}
