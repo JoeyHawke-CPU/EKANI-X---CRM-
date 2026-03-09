@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -145,10 +146,26 @@ const ClientIntakeForm: React.FC<ClientIntakeFormProps> = ({ initialData, onClos
     console.log("Intake Form Data:", form);
   };
 
+  const progressPercent = ((section + 1) / INTAKE_SECTIONS.length) * 100;
+
   return (
     <div className="space-y-6">
+      {/* Progress bar */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>Section {section + 1} of {INTAKE_SECTIONS.length}</span>
+          <span className="font-medium">{Math.round(progressPercent)}% complete</span>
+        </div>
+        <Progress value={progressPercent} className="h-2" />
+      </div>
+
+      {/* Section title */}
+      <div className="border-b pb-3">
+        <h3 className="text-base font-semibold">{INTAKE_SECTIONS[section]}</h3>
+      </div>
+
       {/* Section indicator — scrollable */}
-      <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide">
+      <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-hide">
         {INTAKE_SECTIONS.map((s, i) => (
           <button
             key={s}
