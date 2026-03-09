@@ -71,17 +71,12 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onClose }) => {
     remarks: lead?.remarks || "",
     delivery_tracking_status: (lead as any)?.delivery_tracking_status || "Ongoing",
     status: lead?.status || "New Lead",
+    lock_in_payment_received: (lead as any)?.lock_in_payment_received || "",
+    amount_received: (lead as any)?.amount_received?.toString() || "",
   });
 
   const set = (key: string, value: any) => setForm((p) => ({ ...p, [key]: value }));
 
-  const selectedAddOns = form.add_ons ? form.add_ons.split(", ").filter(Boolean) : [];
-  const toggleAddOn = (addon: string) => {
-    const current = new Set(selectedAddOns);
-    if (current.has(addon)) current.delete(addon);
-    else current.add(addon);
-    set("add_ons", Array.from(current).join(", "));
-  };
 
   // Parse solution_selected: may contain "Other: <text>"
   const parseSolutions = (raw: string) => {
@@ -260,7 +255,13 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onClose }) => {
           </div>
           <div className="space-y-2">
             <Label>Domain Status</Label>
-            <Input value={form.domain_status} onChange={(e) => set("domain_status", e.target.value)} placeholder="e.g. Has domain, Needs domain" />
+            <Select value={form.domain_status} onValueChange={(v) => set("domain_status", v)}>
+              <SelectTrigger><SelectValue placeholder="Select domain status" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Has a domain">Has a domain</SelectItem>
+                <SelectItem value="Needs a domain">Needs a domain</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label>Timeline (days)</Label>
@@ -304,14 +305,28 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onClose }) => {
           </div>
           <div className="space-y-2">
             <Label>Add-Ons</Label>
-            <div className="flex flex-wrap gap-2 pt-1">
-              {ADD_ONS.map((a) => (
-                <label key={a} className="flex items-center gap-1.5 text-sm cursor-pointer">
-                  <Checkbox checked={selectedAddOns.includes(a)} onCheckedChange={() => toggleAddOn(a)} />
-                  {a}
-                </label>
-              ))}
-            </div>
+            <Select value={form.add_ons} onValueChange={(v) => set("add_ons", v)}>
+              <SelectTrigger><SelectValue placeholder="Select add-on" /></SelectTrigger>
+              <SelectContent>
+                {ADD_ONS.map((a) => (
+                  <SelectItem key={a} value={a}>{a}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label>Lock-In Payment Received</Label>
+            <Select value={form.lock_in_payment_received || ""} onValueChange={(v) => set("lock_in_payment_received", v)}>
+              <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Yes">Yes</SelectItem>
+                <SelectItem value="No">No</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label>Amount Received (KD)</Label>
+            <Input type="number" step="0.001" value={form.amount_received} onChange={(e) => set("amount_received", e.target.value)} placeholder="0.000" />
           </div>
           <div className="space-y-2">
             <Label>Quoted Amount (KD)</Label>
