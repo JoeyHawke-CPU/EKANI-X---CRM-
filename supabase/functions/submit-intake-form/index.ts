@@ -39,6 +39,7 @@ interface IntakeFormData {
   addons_selected: string[];
   working_hours_from: string;
   working_hours_to: string;
+  closed_days: string[];
   template_shown: string;
   lockin_payment_received: string;
   payment_received: string;
