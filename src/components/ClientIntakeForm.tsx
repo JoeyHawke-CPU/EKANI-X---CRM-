@@ -490,6 +490,20 @@ const ClientIntakeForm: React.FC<ClientIntakeFormProps> = ({ initialData, onClos
               </SelectContent>
             </Select>
           </div>
+          <div className="space-y-3 sm:col-span-2">
+            <Label>Closed Days</Label>
+            <div className="flex flex-wrap gap-3">
+              {["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map((day) => (
+                <label key={day} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <Checkbox
+                    checked={form.closed_days.includes(day)}
+                    onCheckedChange={() => toggleArray("closed_days", day)}
+                  />
+                  {day}
+                </label>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
