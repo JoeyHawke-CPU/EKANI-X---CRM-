@@ -159,6 +159,7 @@ async function appendToSheet(accessToken: string, spreadsheetId: string, data: I
       data.addons_selected.join(", "),
       data.working_hours_from,
       data.working_hours_to,
+      data.closed_days.join(", "),
       data.template_shown,
       data.lockin_payment_received,
       data.payment_received,
