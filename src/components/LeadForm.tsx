@@ -77,13 +77,6 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onClose }) => {
 
   const set = (key: string, value: any) => setForm((p) => ({ ...p, [key]: value }));
 
-  const selectedAddOns = form.add_ons ? form.add_ons.split(", ").filter(Boolean) : [];
-  const toggleAddOn = (addon: string) => {
-    const current = new Set(selectedAddOns);
-    if (current.has(addon)) current.delete(addon);
-    else current.add(addon);
-    set("add_ons", Array.from(current).join(", "));
-  };
 
   // Parse solution_selected: may contain "Other: <text>"
   const parseSolutions = (raw: string) => {
