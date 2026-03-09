@@ -373,7 +373,7 @@ const RepDashboard = () => {
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditLead(lead); setShowForm(true); }}>
                             <Eye className="h-3.5 w-3.5 text-muted-foreground" />
                           </Button>
-                          <ForwardPopover lead={lead} size="sm" userId={user?.id || ""} profileName={profile?.full_name} />
+                          <ForwardPopover lead={lead} size="sm" userId={user?.id || ""} profileName={profile?.full_name} onIntake={() => setIntakeLead(lead)} />
                         </div>
                       </div>
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
