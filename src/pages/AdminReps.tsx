@@ -358,9 +358,14 @@ const AdminReps = () => {
                             <Badge variant="secondary" className="text-xs font-normal">{lead.status}</Badge>
                           </td>
                           <td className="py-2.5">
-                            <Button variant="ghost" size="sm" className="gap-1.5 h-7" onClick={() => setEditLead(lead)}>
-                              <Eye className="h-3.5 w-3.5" /> View
-                            </Button>
+                            <div className="flex items-center gap-1">
+                              <Button variant="ghost" size="sm" className="gap-1.5 h-7" onClick={() => setEditLead(lead)}>
+                                <Eye className="h-3.5 w-3.5" /> View
+                              </Button>
+                              <Button variant="ghost" size="sm" className="gap-1.5 h-7" onClick={() => setIntakeLead(lead)} title="Intake Form">
+                                <ClipboardList className="h-3.5 w-3.5" /> Intake
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       ))}
