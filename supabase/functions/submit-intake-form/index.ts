@@ -168,7 +168,7 @@ async function appendToSheet(accessToken: string, spreadsheetId: string, data: I
   ];
 
   const response = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A:AL:append?valueInputOption=USER_ENTERED`,
+    `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A:AM:append?valueInputOption=USER_ENTERED`,
     {
       method: "POST",
       headers: {
