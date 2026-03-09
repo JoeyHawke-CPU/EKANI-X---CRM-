@@ -126,6 +126,9 @@ const ForwardPopover = ({ lead, size = "sm", userId, profileName, onIntake }: { 
         <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-muted transition-colors" onClick={() => quickReceipt(lead, userId)}>
           <Receipt className="h-4 w-4 text-muted-foreground" /> Generate Receipt
         </button>
+        <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-muted transition-colors" onClick={onIntake}>
+          <ClipboardList className="h-4 w-4 text-muted-foreground" /> Intake Form
+        </button>
         <hr className="my-1 border-border" />
         <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-muted transition-colors" onClick={() => shareViaWhatsApp(lead)}>
           <MessageCircle className="h-4 w-4 text-muted-foreground" /> WhatsApp
