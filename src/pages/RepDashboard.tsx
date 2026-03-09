@@ -106,7 +106,7 @@ const quickReceipt = async (lead: LeadRow, userId: string) => {
   toast.success(`Receipt ${(data as any).receipt_number} generated`);
 };
 
-const ForwardPopover = ({ lead, size = "sm", userId, profileName }: { lead: LeadRow; size?: "sm" | "md"; userId: string; profileName?: string }) => {
+const ForwardPopover = ({ lead, size = "sm", userId, profileName, onIntake }: { lead: LeadRow; size?: "sm" | "md"; userId: string; profileName?: string; onIntake?: () => void }) => {
   const iconSize = size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4";
   const btnSize = size === "sm" ? "h-7 w-7" : "h-8 w-8";
   return (
