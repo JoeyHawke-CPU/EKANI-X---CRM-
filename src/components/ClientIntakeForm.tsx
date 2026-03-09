@@ -281,6 +281,10 @@ const ClientIntakeForm: React.FC<ClientIntakeFormProps> = ({ initialData, onClos
             </div>
           )}
           <div className="space-y-2 sm:col-span-2">
+            <Label>Prefixes Required</Label>
+            <Input value={form.prefixes_required} onChange={(e) => set("prefixes_required", e.target.value)} placeholder="e.g. www, shop, blog" />
+          </div>
+          <div className="space-y-2 sm:col-span-2">
             <Label>Preferred Domain Name (if creating new website)</Label>
             <Input value={form.preferred_domain} onChange={(e) => set("preferred_domain", e.target.value)} placeholder="www.businessname.com" />
           </div>
