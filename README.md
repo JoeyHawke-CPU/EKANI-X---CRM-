@@ -277,7 +277,7 @@ For Vercel deployment, connect this GitHub repository and deploy the production 
 Developed and maintained by:
 
 **Josseph John**
-Co-Founder / CTO
+GM / CTO
 EKANI AI Consultancy
 
 Website: [www.ekani.ai](https://www.ekani.ai)
